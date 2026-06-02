@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { fetchSiteSettings } from "@/lib/settings";
 import type { BloodGroup } from "@/lib/types/database";
 
 export type AuthActionState = {
@@ -84,6 +85,11 @@ export async function register(
 
   if (!fullName || !bloodGroup || !division || !district || !upazila || !phone) {
     return { error: "Please fill in all required profile fields." };
+  }
+
+  const settings = await fetchSiteSettings();
+  if (!settings.registration_enabled) {
+    return { error: "New registrations are currently closed." };
   }
 
   const supabase = await createClient();

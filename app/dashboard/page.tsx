@@ -5,11 +5,13 @@ import { DashboardForm } from "@/app/dashboard/DashboardForm";
 import { ProfileDisplay } from "@/components/ProfileDisplay";
 import { DashboardNav } from "@/components/DashboardNav";
 import { logout } from "@/app/actions/auth";
+import { AnnouncementBanner } from "@/components/AnnouncementBanner";
 import {
   fetchIncomingDonorRequests,
   fetchReceiverDonorRequests,
   fetchUnreadNotificationCount,
 } from "@/lib/data/donor-requests";
+import { fetchActiveAnnouncements } from "@/lib/data/super-admin";
 
 export const metadata = {
   title: "Dashboard — RoktoBondhu",
@@ -53,10 +55,11 @@ export default async function DashboardPage() {
     );
   }
 
-  const [incoming, myRequests, unreadCount] = await Promise.all([
+  const [incoming, myRequests, unreadCount, announcements] = await Promise.all([
     fetchIncomingDonorRequests(user.id),
     fetchReceiverDonorRequests(user.id),
     fetchUnreadNotificationCount(user.id),
+    fetchActiveAnnouncements(),
   ]);
 
   const pendingIncoming = incoming.filter((r) => r.status === "pending").length;
@@ -81,6 +84,12 @@ export default async function DashboardPage() {
         </div>
 
         <DashboardNav currentPath="/dashboard" unreadCount={unreadCount} />
+
+        {announcements.length > 0 && (
+          <div className="mb-8">
+            <AnnouncementBanner announcements={announcements} compact />
+          </div>
+        )}
 
         <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Link

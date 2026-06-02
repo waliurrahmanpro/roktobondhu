@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar";
-import { isUserAdmin } from "@/lib/admin";
+import { getUserRole, hasAdminAccess, hasSuperAdminAccess } from "@/lib/roles";
 import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
 
@@ -31,7 +31,9 @@ export default async function RootLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isAdmin = user ? await isUserAdmin(user.id) : false;
+  const role = user ? await getUserRole(user.id) : null;
+  const isAdmin = hasAdminAccess(role);
+  const isSuperAdmin = hasSuperAdminAccess(role);
 
   return (
     <html
@@ -39,7 +41,11 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-white text-gray-900">
-        <Navbar userEmail={user?.email ?? null} isAdmin={isAdmin} />
+        <Navbar
+          userEmail={user?.email ?? null}
+          isAdmin={isAdmin}
+          isSuperAdmin={isSuperAdmin}
+        />
         {children}
       </body>
     </html>

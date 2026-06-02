@@ -59,18 +59,28 @@ Run **`007_donation_completion_points.sql`** for:
 
 ## 2h. Admin panel (Phase 5)
 
-Run **`009_admin_panel.sql`** for:
+Run **`009_admin_panel.sql`** for moderation (`is_banned`, report status, blood request status).
 
-- `admin_users` — who can access `/admin`
-- `profiles.is_banned` — suspend accounts
-- `donations.report_status` — `pending` / `resolved` / `dismissed`
-- `blood_requests.status` — `active` / `completed` / `removed`
-- `is_admin()` and admin RLS policies
+## 2i. Super admin (Phase 6)
 
-Then grant yourself admin (replace with your auth user UUID from **Authentication → Users**):
+Run **`010_super_admin_system.sql`** for:
+
+- `profiles.role` — `user` | `admin` | `super_admin` (replaces `admin_users`)
+- `site_settings`, `announcements`, `point_transactions`, `audit_logs`
+- Super-admin RPCs (roles, points, broadcast, settings)
+
+Grant yourself super admin:
 
 ```sql
-insert into public.admin_users (user_id) values ('your-user-uuid-here');
+update public.profiles
+set role = 'super_admin'
+where user_id = 'your-user-uuid-here';
+```
+
+Regular admins:
+
+```sql
+update public.profiles set role = 'admin' where user_id = 'another-uuid';
 ```
 
 ## 2g. Reported donations & trust (Phase 4)

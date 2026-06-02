@@ -2,7 +2,9 @@ import Link from "next/link";
 import { DropletIcon } from "@/components/DropletIcon";
 import { BloodRequestFeed } from "@/components/BloodRequestFeed";
 import { AvailableDonorsSection } from "@/components/AvailableDonorsSection";
+import { AnnouncementBanner } from "@/components/AnnouncementBanner";
 import { TopDonorsSection } from "@/components/TopDonorsSection";
+import { fetchActiveAnnouncements } from "@/lib/data/super-admin";
 import { fetchPublicBloodRequests } from "@/lib/data/fetch-blood-requests";
 import { fetchAvailableDonorsPage } from "@/lib/data/donors";
 import { fetchTopDonors } from "@/lib/data/leaderboard";
@@ -21,11 +23,13 @@ export default async function Home() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [bloodRequests, availableDonors, topDonors] = await Promise.all([
-    fetchPublicBloodRequests(),
-    fetchAvailableDonorsPage(),
-    fetchTopDonors(5),
-  ]);
+  const [bloodRequests, availableDonors, topDonors, announcements] =
+    await Promise.all([
+      fetchPublicBloodRequests(),
+      fetchAvailableDonorsPage(),
+      fetchTopDonors(5),
+      fetchActiveAnnouncements(),
+    ]);
 
   return (
     <div className="min-h-screen bg-white text-gray-900">
@@ -141,6 +145,14 @@ export default async function Home() {
             </div>
           </div>
         </section>
+
+        {announcements.length > 0 && (
+          <section className="border-b border-amber-100 bg-amber-50/80 py-6">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <AnnouncementBanner announcements={announcements} />
+            </div>
+          </section>
+        )}
 
         <TopDonorsSection donors={topDonors} />
 

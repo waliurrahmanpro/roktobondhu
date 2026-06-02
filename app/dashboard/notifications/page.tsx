@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DashboardNav } from "@/components/DashboardNav";
+import { AnnouncementBanner } from "@/components/AnnouncementBanner";
 import { NotificationItem } from "@/components/NotificationItem";
+import { fetchActiveAnnouncements } from "@/lib/data/super-admin";
 import { markAllNotificationsReadAction } from "@/app/actions/notifications";
 import { fetchUserNotifications } from "@/lib/data/notifications";
 import { fetchUnreadNotificationCount } from "@/lib/data/donor-requests";
@@ -20,9 +22,10 @@ export default async function NotificationsPage() {
     redirect("/login?redirect=/dashboard/notifications");
   }
 
-  const [notifications, unreadCount] = await Promise.all([
+  const [notifications, unreadCount, announcements] = await Promise.all([
     fetchUserNotifications(user.id),
     fetchUnreadNotificationCount(user.id),
+    fetchActiveAnnouncements(),
   ]);
 
   return (
@@ -51,6 +54,15 @@ export default async function NotificationsPage() {
           currentPath="/dashboard/notifications"
           unreadCount={unreadCount}
         />
+
+        {announcements.length > 0 && (
+          <div className="mb-6">
+            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
+              Announcements
+            </h2>
+            <AnnouncementBanner announcements={announcements} compact />
+          </div>
+        )}
 
         {notifications.length === 0 ? (
           <p className="rounded-xl border border-dashed border-gray-200 bg-white py-12 text-center text-gray-500">

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireAdmin } from "@/lib/admin";
+import { requireAdmin } from "@/lib/roles";
 
 export const metadata = {
   title: "Admin — RoktoBondhu",

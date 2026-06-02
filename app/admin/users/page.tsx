@@ -30,6 +30,7 @@ export default async function AdminUsersPage() {
                   <th className="px-4 py-3">Points</th>
                   <th className="px-4 py-3">Donations</th>
                   <th className="px-4 py-3">Reports</th>
+                  <th className="px-4 py-3">Role</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Actions</th>
                 </tr>
@@ -49,6 +50,9 @@ export default async function AdminUsersPage() {
                     <td className="px-4 py-4">{user.total_points ?? 0}</td>
                     <td className="px-4 py-4">{user.total_donations ?? 0}</td>
                     <td className="px-4 py-4">{user.reported_donations ?? 0}</td>
+                    <td className="px-4 py-4 capitalize text-gray-600">
+                      {(user.role ?? "user").replace("_", " ")}
+                    </td>
                     <td className="px-4 py-4">
                       {user.is_banned ? (
                         <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-semibold text-red-800">

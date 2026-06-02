@@ -20,6 +20,7 @@ const mainLinks = [
 type NavbarProps = {
   userEmail?: string | null;
   isAdmin?: boolean;
+  isSuperAdmin?: boolean;
 };
 
 function MenuIcon({ className }: { className?: string }) {
@@ -60,7 +61,11 @@ function CloseIcon({ className }: { className?: string }) {
   );
 }
 
-export default function Navbar({ userEmail, isAdmin = false }: NavbarProps) {
+export default function Navbar({
+  userEmail,
+  isAdmin = false,
+  isSuperAdmin = false,
+}: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const isLoggedIn = Boolean(userEmail);
@@ -73,6 +78,9 @@ export default function Navbar({ userEmail, isAdmin = false }: NavbarProps) {
 
   if (isAdmin) {
     visibleLinks.push({ href: "/admin", label: "Admin Panel" });
+  }
+  if (isSuperAdmin) {
+    visibleLinks.push({ href: "/super-admin", label: "Super Admin" });
   }
 
   const linkClass = (href: string) =>

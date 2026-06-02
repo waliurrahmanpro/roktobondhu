@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { isUserAdmin } from "@/lib/admin";
+import { isUserAdmin } from "@/lib/roles";
 import type { ActionResult } from "@/app/actions/donor-requests";
 
 async function assertAdmin() {
@@ -80,6 +80,13 @@ export async function banUserAction(formData: FormData): Promise<ActionResult> {
 
   if (error) return { error: error.message };
 
+  await auth.supabase.rpc("insert_audit_log", {
+    p_action: "user_banned",
+    p_target_type: "profile",
+    p_target_id: userId,
+    p_details: {},
+  });
+
   revalidatePath("/admin/users");
   return { success: "User banned." };
 }
@@ -97,6 +104,13 @@ export async function unbanUserAction(formData: FormData): Promise<ActionResult>
     .eq("user_id", userId);
 
   if (error) return { error: error.message };
+
+  await auth.supabase.rpc("insert_audit_log", {
+    p_action: "user_unbanned",
+    p_target_type: "profile",
+    p_target_id: userId,
+    p_details: {},
+  });
 
   revalidatePath("/admin/users");
   return { success: "User unbanned." };
