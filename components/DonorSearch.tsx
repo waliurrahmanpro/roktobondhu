@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import {
   searchDonorsAction,
+  loadMoreDonorsAction,
   type DonorSearchState,
 } from "@/app/actions/donors";
 import { DonorCard } from "@/components/DonorCard";
@@ -11,13 +12,44 @@ import { BLOOD_GROUPS, inputClassName } from "@/lib/constants";
 const initialState: DonorSearchState = {
   donors: [],
   searched: false,
+  hasMore: false,
+  totalCount: 0,
 };
 
 export function DonorSearch() {
-  const [state, formAction, pending] = useActionState(
+  const [state, formAction, searchPending] = useActionState(
     searchDonorsAction,
     initialState
   );
+  const [extraDonors, setExtraDonors] = useState<DonorSearchState["donors"]>(
+    []
+  );
+  const [hasMore, setHasMore] = useState(false);
+  const [loadMorePending, startLoadMore] = useTransition();
+
+  useEffect(() => {
+    if (state.searched) {
+      setExtraDonors([]);
+      setHasMore(state.hasMore ?? false);
+    }
+  }, [state]);
+
+  const allDonors = [...(state.donors ?? []), ...extraDonors];
+  const showingCount = allDonors.length;
+  const totalCount = state.totalCount ?? 0;
+
+  function handleLoadMore() {
+    if (!state.filters) return;
+
+    startLoadMore(async () => {
+      const result = await loadMoreDonorsAction(
+        state.filters!,
+        showingCount
+      );
+      setExtraDonors((prev) => [...prev, ...result.donors]);
+      setHasMore(result.hasMore ?? false);
+    });
+  }
 
   return (
     <>
@@ -83,10 +115,10 @@ export function DonorSearch() {
           <div className="flex items-end sm:col-span-2 lg:col-span-1">
             <button
               type="submit"
-              disabled={pending}
+              disabled={searchPending}
               className="w-full rounded-xl bg-red-600 px-6 py-3.5 font-semibold text-white shadow-lg shadow-red-200 transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {pending ? "Searching…" : "Search Donors"}
+              {searchPending ? "Searching…" : "Search Donors"}
             </button>
           </div>
         </div>
@@ -99,18 +131,39 @@ export function DonorSearch() {
           </p>
         )}
 
-        {state.searched && !state.error && state.donors.length === 0 && (
+        {state.searched && !state.error && allDonors.length === 0 && (
           <p className="rounded-xl border border-dashed border-gray-200 bg-gray-50 py-12 text-center text-gray-600">
             No donors found.
           </p>
         )}
 
-        {state.donors.length > 0 && (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {state.donors.map((donor) => (
-              <DonorCard key={donor.id} donor={donor} />
-            ))}
-          </div>
+        {allDonors.length > 0 && (
+          <>
+            {totalCount > 0 && (
+              <p className="mb-6 text-center text-sm text-gray-500">
+                Showing {showingCount} of {totalCount} donor
+                {totalCount === 1 ? "" : "s"} · sorted by most recently active
+              </p>
+            )}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {allDonors.map((donor) => (
+                <DonorCard key={donor.id} donor={donor} />
+              ))}
+            </div>
+
+            {hasMore && (
+              <div className="mt-8 text-center">
+                <button
+                  type="button"
+                  onClick={handleLoadMore}
+                  disabled={loadMorePending}
+                  className="rounded-full border border-red-200 bg-white px-8 py-3 text-sm font-semibold text-red-600 shadow-sm transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {loadMorePending ? "Loading…" : "Load More"}
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </>
