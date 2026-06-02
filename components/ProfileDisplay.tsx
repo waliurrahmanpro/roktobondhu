@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { DropletIcon } from "@/components/DropletIcon";
+import { POINTS_PER_DONATION } from "@/lib/constants";
 import { formatDate } from "@/lib/format";
 import type { Profile } from "@/lib/types/database";
 
@@ -55,6 +56,12 @@ export function ProfileDisplay({ profile, email }: ProfileDisplayProps) {
               >
                 {profile.donation_availability ? "Available ON" : "Available OFF"}
               </span>
+              <span className="rounded-full bg-amber-400 px-3 py-1 text-sm font-bold text-amber-950">
+                {profile.total_points ?? 0} points
+              </span>
+              <span className="rounded-full bg-white/90 px-3 py-1 text-sm font-semibold text-red-700">
+                {profile.total_donations ?? 0} donations
+              </span>
             </div>
           </div>
         </div>
@@ -74,6 +81,14 @@ export function ProfileDisplay({ profile, email }: ProfileDisplayProps) {
         <DetailRow
           label="Donation availability"
           value={profile.donation_availability ? "ON" : "OFF"}
+        />
+        <DetailRow
+          label="Total points"
+          value={`${profile.total_points ?? 0} (${POINTS_PER_DONATION} per confirmed donation)`}
+        />
+        <DetailRow
+          label="Total donations"
+          value={String(profile.total_donations ?? 0)}
         />
       </dl>
     </section>

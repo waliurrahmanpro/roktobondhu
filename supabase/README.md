@@ -46,6 +46,17 @@ Run **`005_donor_requests_notifications.sql`** for:
 
 Then run **`006_notification_titles.sql`** to align notification titles (New request received / Request accepted / Request rejected).
 
+## 2f. Donation completion & points (Phase 3)
+
+Run **`007_donation_completion_points.sql`** for:
+
+- `donations` — completion records with feedback (`fine` / `reported`)
+- `profiles.total_donations` — count of confirmed donations
+- `donor_requests` statuses `completed` and `reported`
+- `complete_donation()` RPC — points (+10), notifications, and atomic updates
+
+(If you need the filename `006_donation_completion_points.sql`, use the same SQL as `007`; `006` is already used for notification titles.)
+
 ## 3. Auth settings (recommended for local dev)
 
 Dashboard → **Authentication** → **Providers** → Email:

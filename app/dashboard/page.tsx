@@ -82,7 +82,7 @@ export default async function DashboardPage() {
 
         <DashboardNav currentPath="/dashboard" unreadCount={unreadCount} />
 
-        <div className="mb-8 grid gap-4 sm:grid-cols-3">
+        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Link
             href="/dashboard/incoming"
             className="rounded-xl border border-red-100 bg-white p-4 shadow-sm transition hover:border-red-200"
@@ -108,6 +108,18 @@ export default async function DashboardPage() {
             <p className="text-2xl font-bold text-red-600">{unreadCount}</p>
             <p className="mt-1 text-sm font-medium text-gray-900">Notifications</p>
             <p className="text-xs text-gray-500">Unread</p>
+          </Link>
+          <Link
+            href="/dashboard/my-donations"
+            className="rounded-xl border border-amber-100 bg-amber-50/50 p-4 shadow-sm transition hover:border-amber-200"
+          >
+            <p className="text-2xl font-bold text-amber-800">
+              {profile.total_points ?? 0}
+            </p>
+            <p className="mt-1 text-sm font-medium text-gray-900">Total points</p>
+            <p className="text-xs text-gray-500">
+              {profile.total_donations ?? 0} confirmed donations
+            </p>
           </Link>
         </div>
 

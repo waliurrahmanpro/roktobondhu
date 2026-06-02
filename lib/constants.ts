@@ -27,6 +27,8 @@ export const DIVISIONS = [
   "Sylhet",
 ] as const;
 
+export const POINTS_PER_DONATION = 10;
+
 export const inputClassName =
   "w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100";
 

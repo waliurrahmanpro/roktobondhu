@@ -1,3 +1,4 @@
+import { DonationCompletionForm } from "@/components/DonationCompletionForm";
 import { formatDate } from "@/lib/format";
 import { statusLabel, statusStyles } from "@/lib/donor-requests";
 import { formatPhoneDisplay, telLink, whatsAppLink } from "@/lib/phone";
@@ -66,7 +67,24 @@ export function ReceiverRequestCard({ request }: ReceiverRequestCardProps) {
             Accepted — you can contact {donor.full_name} at{" "}
             {formatPhoneDisplay(donor.phone)}.
           </p>
+          <DonationCompletionForm
+            requestId={request.id}
+            donorName={donor.full_name}
+          />
         </div>
+      )}
+
+      {request.status === "completed" && (
+        <p className="mt-4 text-sm text-blue-700">
+          Donation confirmed. Thank you for updating your request.
+        </p>
+      )}
+
+      {request.status === "reported" && (
+        <p className="mt-4 text-sm text-red-700">
+          A report was submitted for this donation. No points were awarded to the
+          donor.
+        </p>
       )}
 
       {request.status === "rejected" && (

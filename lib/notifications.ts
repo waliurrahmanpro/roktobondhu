@@ -15,5 +15,13 @@ export function notificationLink(notification: Notification): string {
     return "/dashboard/incoming";
   }
 
+  if (title.includes("donation confirmed") || title.includes("earned")) {
+    return "/dashboard/my-donations";
+  }
+
+  if (title.includes("report submitted") || title.includes("report has been")) {
+    return "/dashboard/reports";
+  }
+
   return "/dashboard/my-requests";
 }

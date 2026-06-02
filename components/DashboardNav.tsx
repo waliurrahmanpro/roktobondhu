@@ -4,6 +4,8 @@ const links = [
   { href: "/dashboard", label: "Profile" },
   { href: "/dashboard/incoming", label: "Incoming requests" },
   { href: "/dashboard/my-requests", label: "My requests" },
+  { href: "/dashboard/my-donations", label: "My donations" },
+  { href: "/dashboard/reports", label: "Reports" },
   { href: "/dashboard/notifications", label: "Notifications" },
   { href: "/dashboard/requests", label: "Public blood need" },
 ];

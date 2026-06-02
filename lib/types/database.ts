@@ -21,16 +21,23 @@ export type Profile = {
   donation_availability: boolean;
   profile_picture_url: string | null;
   total_points: number;
+  total_donations: number;
   created_at: string;
   updated_at: string;
 };
 
 export type ProfileInsert = Omit<
   Profile,
-  "id" | "created_at" | "updated_at" | "profile_picture_url" | "total_points"
+  | "id"
+  | "created_at"
+  | "updated_at"
+  | "profile_picture_url"
+  | "total_points"
+  | "total_donations"
 > & {
   profile_picture_url?: string | null;
   total_points?: number;
+  total_donations?: number;
 };
 
 export type ProfileUpdate = Partial<
@@ -58,7 +65,29 @@ export type BloodRequestInsert = Omit<
   "id" | "created_at" | "updated_at"
 >;
 
-export type DonorRequestStatus = "pending" | "accepted" | "rejected";
+export type DonorRequestStatus =
+  | "pending"
+  | "accepted"
+  | "rejected"
+  | "completed"
+  | "reported";
+
+export type DonationFeedbackStatus = "fine" | "reported";
+
+export type Donation = {
+  id: string;
+  donor_request_id: string;
+  donor_id: string;
+  receiver_id: string;
+  feedback_status: DonationFeedbackStatus;
+  feedback_message: string | null;
+  completed_at: string;
+};
+
+export type DonationWithProfiles = Donation & {
+  donor_profile: ProfileSummary | null;
+  receiver_profile: ProfileSummary | null;
+};
 
 export type DonorRequest = {
   id: string;
@@ -115,9 +144,24 @@ export type Database = {
         Update: Partial<Pick<Notification, "read_at">>;
         Relationships: [];
       };
+      donations: {
+        Row: Donation;
+        Insert: Omit<Donation, "id" | "completed_at">;
+        Update: Partial<Donation>;
+        Relationships: [];
+      };
+    };
+    Functions: {
+      complete_donation: {
+        Args: {
+          p_request_id: string;
+          p_feedback_status: string;
+          p_feedback_message?: string | null;
+        };
+        Returns: undefined;
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

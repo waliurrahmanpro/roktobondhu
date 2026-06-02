@@ -67,6 +67,9 @@ export function DonorCard({ donor, isLoggedIn }: DonorCardProps) {
             <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
               {donor.total_points ?? 0} pts
             </span>
+            <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-700">
+              {donor.total_donations ?? 0} donations
+            </span>
           </div>
 
           <dl className="mt-3 space-y-1 text-sm">
