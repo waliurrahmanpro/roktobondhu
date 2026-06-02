@@ -1,8 +1,11 @@
 import Image from "next/image";
+import Link from "next/link";
 import { telLink, whatsAppLink } from "@/lib/phone";
 import type { Profile } from "@/lib/types/database";
 import { DropletIcon } from "@/components/DropletIcon";
 import { RequestBloodButton } from "@/components/RequestBloodButton";
+import { DonorStatsBlock } from "@/components/DonorStatsBlock";
+import { TrustStatusLabel } from "@/components/TrustStatusLabel";
 
 type DonorCardProps = {
   donor: Profile;
@@ -38,11 +41,16 @@ function PhoneIcon({ className }: { className?: string }) {
 
 export function DonorCard({ donor, isLoggedIn }: DonorCardProps) {
   const whatsappMessage = `Hello ${donor.full_name}, I found you on RoktoBondhu and need ${donor.blood_group} blood.`;
+  const reported = donor.reported_donations ?? 0;
+  const donations = donor.total_donations ?? 0;
 
   return (
     <article className="flex flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition hover:border-red-200 hover:shadow-lg hover:shadow-red-50">
       <div className="flex items-start gap-4">
-        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-red-100 bg-red-50">
+        <Link
+          href={`/donor/${donor.user_id}`}
+          className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-red-100 bg-red-50"
+        >
           {donor.profile_picture_url ? (
             <Image
               src={donor.profile_picture_url}
@@ -56,20 +64,24 @@ export function DonorCard({ donor, isLoggedIn }: DonorCardProps) {
               <DropletIcon className="h-8 w-8" />
             </div>
           )}
-        </div>
+        </Link>
 
         <div className="min-w-0 flex-1">
-          <h3 className="font-semibold text-gray-900">{donor.full_name}</h3>
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-red-600 px-2.5 py-0.5 text-xs font-bold text-white">
-              {donor.blood_group}
-            </span>
-            <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
-              {donor.total_points ?? 0} pts
-            </span>
-            <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-700">
-              {donor.total_donations ?? 0} donations
-            </span>
+          <Link
+            href={`/donor/${donor.user_id}`}
+            className="font-semibold text-gray-900 hover:text-red-600"
+          >
+            {donor.full_name}
+          </Link>
+          <div className="mt-2">
+            <DonorStatsBlock donor={donor} />
+          </div>
+          <div className="mt-2">
+            <TrustStatusLabel
+              totalDonations={donations}
+              reportedDonations={reported}
+              size="sm"
+            />
           </div>
 
           <dl className="mt-3 space-y-1 text-sm">

@@ -22,6 +22,7 @@ export type Profile = {
   profile_picture_url: string | null;
   total_points: number;
   total_donations: number;
+  reported_donations: number;
   created_at: string;
   updated_at: string;
 };
@@ -34,10 +35,12 @@ export type ProfileInsert = Omit<
   | "profile_picture_url"
   | "total_points"
   | "total_donations"
+  | "reported_donations"
 > & {
   profile_picture_url?: string | null;
   total_points?: number;
   total_donations?: number;
+  reported_donations?: number;
 };
 
 export type ProfileUpdate = Partial<
@@ -110,6 +113,26 @@ export type Notification = {
 export type ProfileSummary = Pick<
   Profile,
   "user_id" | "full_name" | "blood_group" | "district" | "upazila" | "phone"
+>;
+
+/** Public donor page — no phone */
+export type PublicDonorProfile = Pick<
+  Profile,
+  | "id"
+  | "user_id"
+  | "full_name"
+  | "blood_group"
+  | "division"
+  | "district"
+  | "upazila"
+  | "profile_picture_url"
+  | "total_points"
+  | "total_donations"
+  | "reported_donations"
+  | "donation_availability"
+  | "last_donation_date"
+  | "created_at"
+  | "updated_at"
 >;
 
 export type DonorRequestWithProfiles = DonorRequest & {

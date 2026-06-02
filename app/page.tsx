@@ -2,8 +2,10 @@ import Link from "next/link";
 import { DropletIcon } from "@/components/DropletIcon";
 import { BloodRequestFeed } from "@/components/BloodRequestFeed";
 import { AvailableDonorsSection } from "@/components/AvailableDonorsSection";
+import { TopDonorsSection } from "@/components/TopDonorsSection";
 import { fetchPublicBloodRequests } from "@/lib/data/fetch-blood-requests";
 import { fetchAvailableDonorsPage } from "@/lib/data/donors";
+import { fetchTopDonors } from "@/lib/data/leaderboard";
 import { createClient } from "@/lib/supabase/server";
 
 const stats = [
@@ -19,9 +21,10 @@ export default async function Home() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [bloodRequests, availableDonors] = await Promise.all([
+  const [bloodRequests, availableDonors, topDonors] = await Promise.all([
     fetchPublicBloodRequests(),
     fetchAvailableDonorsPage(),
+    fetchTopDonors(5),
   ]);
 
   return (
@@ -138,6 +141,8 @@ export default async function Home() {
             </div>
           </div>
         </section>
+
+        <TopDonorsSection donors={topDonors} />
 
         {/* Available donors */}
         <section id="search" className="py-20 sm:py-24">
@@ -257,6 +262,11 @@ export default async function Home() {
                 <li>
                   <Link href="/dashboard/requests" className="hover:text-red-600">
                     Create request
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/leaderboard" className="hover:text-red-600">
+                    Leaderboard
                   </Link>
                 </li>
                 <li>

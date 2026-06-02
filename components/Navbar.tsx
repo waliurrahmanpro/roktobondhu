@@ -8,6 +8,7 @@ import { logout } from "@/app/actions/auth";
 
 const mainLinks = [
   { href: "/", label: "Home" },
+  { href: "/leaderboard", label: "Leaderboard" },
   { href: "/login", label: "Login", guestOnly: true },
   { href: "/register", label: "Register", guestOnly: true },
   { href: "/dashboard", label: "Dashboard", authOnly: true },

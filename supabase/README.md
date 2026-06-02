@@ -57,6 +57,13 @@ Run **`007_donation_completion_points.sql`** for:
 
 (If you need the filename `006_donation_completion_points.sql`, use the same SQL as `007`; `006` is already used for notification titles.)
 
+## 2g. Reported donations & trust (Phase 4)
+
+Run **`008_reported_donations.sql`** for:
+
+- `profiles.reported_donations` — count of reports against a donor (for trust badges)
+- Trigger to increment when a `reported` donation is recorded
+
 ## 3. Auth settings (recommended for local dev)
 
 Dashboard → **Authentication** → **Providers** → Email:

@@ -1,5 +1,7 @@
 import Image from "next/image";
+import { DonorBadgeLabel } from "@/components/DonorBadgeLabel";
 import { DropletIcon } from "@/components/DropletIcon";
+import { TrustStatusLabel } from "@/components/TrustStatusLabel";
 import { POINTS_PER_DONATION } from "@/lib/constants";
 import { formatDate } from "@/lib/format";
 import type { Profile } from "@/lib/types/database";
@@ -21,6 +23,10 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 }
 
 export function ProfileDisplay({ profile, email }: ProfileDisplayProps) {
+  const points = profile.total_points ?? 0;
+  const donations = profile.total_donations ?? 0;
+  const reported = profile.reported_donations ?? 0;
+
   return (
     <section className="overflow-hidden rounded-2xl border border-red-100 bg-white shadow-lg shadow-red-50">
       <div className="bg-gradient-to-r from-red-600 to-red-700 px-6 py-8 text-white sm:px-8">
@@ -56,11 +62,16 @@ export function ProfileDisplay({ profile, email }: ProfileDisplayProps) {
               >
                 {profile.donation_availability ? "Available ON" : "Available OFF"}
               </span>
+              <DonorBadgeLabel totalPoints={points} />
+              <TrustStatusLabel
+                totalDonations={donations}
+                reportedDonations={reported}
+              />
               <span className="rounded-full bg-amber-400 px-3 py-1 text-sm font-bold text-amber-950">
-                {profile.total_points ?? 0} points
+                {points} points
               </span>
               <span className="rounded-full bg-white/90 px-3 py-1 text-sm font-semibold text-red-700">
-                {profile.total_donations ?? 0} donations
+                {donations} donations
               </span>
             </div>
           </div>
@@ -88,8 +99,23 @@ export function ProfileDisplay({ profile, email }: ProfileDisplayProps) {
         />
         <DetailRow
           label="Total donations"
-          value={String(profile.total_donations ?? 0)}
+          value={String(donations)}
         />
+        <div className="border-b border-gray-100 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+          <dt className="text-sm font-medium text-gray-500">Trust status</dt>
+          <dd className="mt-1 sm:col-span-2 sm:mt-0">
+            <TrustStatusLabel
+              totalDonations={donations}
+              reportedDonations={reported}
+            />
+          </dd>
+        </div>
+        {reported > 0 && (
+          <DetailRow
+            label="Reported donations"
+            value={String(reported)}
+          />
+        )}
       </dl>
     </section>
   );
