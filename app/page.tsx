@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { DropletIcon } from "@/components/DropletIcon";
 import { BloodRequestFeed } from "@/components/BloodRequestFeed";
-import { BLOOD_GROUPS } from "@/lib/constants";
+import { DonorSearch } from "@/components/DonorSearch";
 import { fetchPublicBloodRequests } from "@/lib/data/fetch-blood-requests";
 
 const stats = [
@@ -141,120 +141,7 @@ export default async function Home() {
               </p>
             </div>
 
-            <form
-              className="mx-auto mt-12 max-w-4xl rounded-2xl border border-gray-100 bg-white p-6 shadow-xl shadow-gray-100 sm:p-8"
-            >
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="sm:col-span-2 lg:col-span-1">
-                  <label
-                    htmlFor="blood-group"
-                    className="mb-2 block text-sm font-medium text-gray-700"
-                  >
-                    Blood group
-                  </label>
-                  <select
-                    id="blood-group"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
-                    defaultValue=""
-                  >
-                    <option value="" disabled>
-                      Select group
-                    </option>
-                    {BLOOD_GROUPS.map((g) => (
-                      <option key={g} value={g}>
-                        {g}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label
-                    htmlFor="district"
-                    className="mb-2 block text-sm font-medium text-gray-700"
-                  >
-                    District
-                  </label>
-                  <input
-                    id="district"
-                    type="text"
-                    placeholder="e.g. Dhaka"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="area"
-                    className="mb-2 block text-sm font-medium text-gray-700"
-                  >
-                    Area / Thana
-                  </label>
-                  <input
-                    id="area"
-                    type="text"
-                    placeholder="e.g. Mirpur"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
-                  />
-                </div>
-                <div className="flex items-end sm:col-span-2 lg:col-span-1">
-                  <button
-                    type="submit"
-                    className="w-full rounded-xl bg-red-600 px-6 py-3.5 font-semibold text-white shadow-lg shadow-red-200 transition hover:bg-red-700"
-                  >
-                    Search Donors
-                  </button>
-                </div>
-              </div>
-            </form>
-
-            <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {[
-                {
-                  name: "Rahim Uddin",
-                  group: "O+",
-                  location: "Mirpur, Dhaka",
-                  last: "2 days ago",
-                },
-                {
-                  name: "Fatima Khan",
-                  group: "A+",
-                  location: "Agrabad, Chittagong",
-                  last: "1 week ago",
-                },
-                {
-                  name: "Karim Hassan",
-                  group: "B+",
-                  location: "Zindabazar, Sylhet",
-                  last: "3 days ago",
-                },
-              ].map((donor) => (
-                <article
-                  key={donor.name}
-                  className="rounded-2xl border border-gray-100 p-6 transition hover:border-red-200 hover:shadow-lg hover:shadow-red-50"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-lg font-bold text-red-600">
-                      {donor.group}
-                    </div>
-                    <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700">
-                      Available
-                    </span>
-                  </div>
-                  <h3 className="mt-4 font-semibold text-gray-900">
-                    {donor.name}
-                  </h3>
-                  <p className="mt-1 text-sm text-gray-500">{donor.location}</p>
-                  <p className="mt-3 text-xs text-gray-400">
-                    Last donated: {donor.last}
-                  </p>
-                  <button
-                    type="button"
-                    className="mt-4 w-full rounded-lg border border-red-200 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50"
-                  >
-                    Contact Donor
-                  </button>
-                </article>
-              ))}
-            </div>
+            <DonorSearch />
           </div>
         </section>
 
