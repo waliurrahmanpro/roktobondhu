@@ -26,8 +26,10 @@ export type Profile = {
 
 export type ProfileInsert = Omit<
   Profile,
-  "id" | "created_at" | "updated_at"
->;
+  "id" | "created_at" | "updated_at" | "profile_picture_url"
+> & {
+  profile_picture_url?: string | null;
+};
 
 export type ProfileUpdate = Partial<
   Omit<Profile, "id" | "user_id" | "created_at" | "updated_at">
