@@ -20,15 +20,17 @@ export type Profile = {
   last_donation_date: string | null;
   donation_availability: boolean;
   profile_picture_url: string | null;
+  total_points: number;
   created_at: string;
   updated_at: string;
 };
 
 export type ProfileInsert = Omit<
   Profile,
-  "id" | "created_at" | "updated_at" | "profile_picture_url"
+  "id" | "created_at" | "updated_at" | "profile_picture_url" | "total_points"
 > & {
   profile_picture_url?: string | null;
+  total_points?: number;
 };
 
 export type ProfileUpdate = Partial<

@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { DropletIcon } from "@/components/DropletIcon";
 import { BloodRequestFeed } from "@/components/BloodRequestFeed";
-import { DonorSearch } from "@/components/DonorSearch";
+import { AvailableDonorsSection } from "@/components/AvailableDonorsSection";
 import { fetchPublicBloodRequests } from "@/lib/data/fetch-blood-requests";
+import { fetchAvailableDonorsPage } from "@/lib/data/donors";
 
 const stats = [
   { value: "12,500+", label: "Registered Donors" },
@@ -12,7 +13,10 @@ const stats = [
 ];
 
 export default async function Home() {
-  const bloodRequests = await fetchPublicBloodRequests();
+  const [bloodRequests, availableDonors] = await Promise.all([
+    fetchPublicBloodRequests(),
+    fetchAvailableDonorsPage(),
+  ]);
 
   return (
     <div className="min-h-screen bg-white text-gray-900">
@@ -103,45 +107,53 @@ export default async function Home() {
                     <DropletIcon className="h-9 w-9" />
                   </div>
                   <div>
-                    <p className="text-sm text-red-100">Active requests</p>
-                    <p className="text-3xl font-bold">47</p>
+                    <p className="text-sm text-red-100">Available donors</p>
+                    <p className="text-3xl font-bold">
+                      {availableDonors.totalCount}
+                    </p>
                   </div>
                 </div>
-                <div className="mt-6 space-y-3">
-                  {["O+", "B+", "A+"].map((group, i) => (
-                    <div
-                      key={group}
-                      className="flex items-center justify-between rounded-xl bg-white/10 px-4 py-3"
-                    >
-                      <span className="font-semibold">{group}</span>
-                      <span className="text-sm text-red-100">
-                        {["Dhaka", "Chittagong", "Sylhet"][i]} · Urgent
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                {availableDonors.donors.length > 0 && (
+                  <div className="mt-6 space-y-3">
+                    {availableDonors.donors.slice(0, 3).map((donor) => (
+                      <div
+                        key={donor.id}
+                        className="flex items-center justify-between rounded-xl bg-white/10 px-4 py-3"
+                      >
+                        <span className="font-semibold">{donor.blood_group}</span>
+                        <span className="truncate text-sm text-red-100">
+                          {donor.upazila}, {donor.district}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </section>
 
-        {/* Donor Search */}
+        {/* Available donors */}
         <section id="search" className="py-20 sm:py-24">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <span className="text-sm font-semibold uppercase tracking-wider text-red-600">
-                Search donors
+                Available donors
               </span>
               <h2 className="mt-2 text-3xl font-bold text-gray-900 sm:text-4xl">
-                Find blood donors near you
+                Active donors ready to help
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-gray-600">
-                Filter by blood group and location to connect with available
-                donors in your area.
+                All donors below are available now. Use search to filter by
+                blood group, district, or upazila.
               </p>
             </div>
 
-            <DonorSearch />
+            <AvailableDonorsSection
+              initialDonors={availableDonors.donors}
+              initialHasMore={availableDonors.hasMore}
+              initialTotalCount={availableDonors.totalCount}
+            />
           </div>
         </section>
 

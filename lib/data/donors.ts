@@ -1,16 +1,16 @@
 import { createClient } from "@/lib/supabase/server";
 import type { BloodGroup, Profile } from "@/lib/types/database";
 
-export const DONOR_PAGE_SIZE = 3;
+export const DONOR_PAGE_SIZE = 12;
 
-export type DonorSearchParams = {
-  bloodGroup: BloodGroup;
+export type DonorFilters = {
+  bloodGroup?: BloodGroup;
   district?: string;
   upazila?: string;
   offset?: number;
 };
 
-export type DonorSearchResult = {
+export type DonorQueryResult = {
   donors: Profile[];
   hasMore: boolean;
   totalCount: number;
@@ -20,12 +20,10 @@ function sanitizeIlike(value: string) {
   return value.replace(/[%_]/g, "").trim();
 }
 
-export async function searchDonors({
-  bloodGroup,
-  district,
-  upazila,
-  offset = 0,
-}: DonorSearchParams): Promise<DonorSearchResult> {
+export async function queryAvailableDonors(
+  filters: DonorFilters = {}
+): Promise<DonorQueryResult> {
+  const { offset = 0, bloodGroup, district, upazila } = filters;
   const supabase = await createClient();
 
   const districtTrimmed = district ? sanitizeIlike(district) : "";
@@ -34,9 +32,12 @@ export async function searchDonors({
   let countQuery = supabase
     .from("profiles")
     .select("*", { count: "exact", head: true })
-    .eq("blood_group", bloodGroup)
-    .eq("donation_availability", true);
+    .eq("donation_availability", true)
+    .neq("full_name", "New Donor");
 
+  if (bloodGroup) {
+    countQuery = countQuery.eq("blood_group", bloodGroup);
+  }
   if (districtTrimmed) {
     countQuery = countQuery.ilike("district", `%${districtTrimmed}%`);
   }
@@ -56,10 +57,13 @@ export async function searchDonors({
   let dataQuery = supabase
     .from("profiles")
     .select("*")
-    .eq("blood_group", bloodGroup)
     .eq("donation_availability", true)
+    .neq("full_name", "New Donor")
     .order("updated_at", { ascending: false });
 
+  if (bloodGroup) {
+    dataQuery = dataQuery.eq("blood_group", bloodGroup);
+  }
   if (districtTrimmed) {
     dataQuery = dataQuery.ilike("district", `%${districtTrimmed}%`);
   }
@@ -73,7 +77,7 @@ export async function searchDonors({
   );
 
   if (error) {
-    console.error("Donor search failed:", error.message);
+    console.error("Donor query failed:", error.message);
     return { donors: [], hasMore: false, totalCount };
   }
 
@@ -81,4 +85,8 @@ export async function searchDonors({
   const hasMore = offset + donors.length < totalCount;
 
   return { donors, hasMore, totalCount };
+}
+
+export async function fetchAvailableDonorsPage(offset = 0) {
+  return queryAvailableDonors({ offset });
 }

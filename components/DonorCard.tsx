@@ -1,10 +1,6 @@
 import Image from "next/image";
-import { formatDate } from "@/lib/format";
-import {
-  formatPhoneDisplay,
-  telLink,
-  whatsAppLink,
-} from "@/lib/phone";
+import Link from "next/link";
+import { telLink, whatsAppLink } from "@/lib/phone";
 import type { Profile } from "@/lib/types/database";
 import { DropletIcon } from "@/components/DropletIcon";
 
@@ -41,6 +37,7 @@ function PhoneIcon({ className }: { className?: string }) {
 
 export function DonorCard({ donor }: DonorCardProps) {
   const whatsappMessage = `Hello ${donor.full_name}, I found you on RoktoBondhu and need ${donor.blood_group} blood.`;
+  const requestHref = `/dashboard/requests?blood_group=${encodeURIComponent(donor.blood_group)}`;
 
   return (
     <article className="flex flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition hover:border-red-200 hover:shadow-lg hover:shadow-red-50">
@@ -62,60 +59,53 @@ export function DonorCard({ donor }: DonorCardProps) {
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="truncate font-semibold text-gray-900">
-              {donor.full_name}
-            </h3>
+          <h3 className="font-semibold text-gray-900">{donor.full_name}</h3>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-red-600 px-2.5 py-0.5 text-xs font-bold text-white">
               {donor.blood_group}
             </span>
-            <span className="rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
-              Available
+            <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
+              {donor.total_points ?? 0} pts
             </span>
           </div>
 
-          <dl className="mt-3 space-y-1.5 text-sm">
+          <dl className="mt-3 space-y-1 text-sm">
             <div className="flex gap-2">
-              <dt className="shrink-0 text-gray-500">District:</dt>
+              <dt className="text-gray-500">District:</dt>
               <dd className="font-medium text-gray-900">{donor.district}</dd>
             </div>
             <div className="flex gap-2">
-              <dt className="shrink-0 text-gray-500">Area:</dt>
+              <dt className="text-gray-500">Upazila:</dt>
               <dd className="font-medium text-gray-900">{donor.upazila}</dd>
-            </div>
-            <div className="flex gap-2">
-              <dt className="shrink-0 text-gray-500">Phone:</dt>
-              <dd className="font-medium text-gray-900">
-                {formatPhoneDisplay(donor.phone)}
-              </dd>
-            </div>
-            <div className="flex gap-2">
-              <dt className="shrink-0 text-gray-500">Last donated:</dt>
-              <dd className="font-medium text-gray-900">
-                {formatDate(donor.last_donation_date)}
-              </dd>
             </div>
           </dl>
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-3">
+      <div className="mt-5 grid grid-cols-3 gap-2">
         <a
           href={whatsAppLink(donor.phone, whatsappMessage)}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1da851]"
+          className="inline-flex flex-col items-center justify-center gap-1 rounded-xl bg-[#25D366] px-2 py-2.5 text-xs font-semibold text-white transition hover:bg-[#1da851] sm:text-sm"
         >
           <WhatsAppIcon className="h-4 w-4" />
           WhatsApp
         </a>
         <a
           href={telLink(donor.phone)}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700"
+          className="inline-flex flex-col items-center justify-center gap-1 rounded-xl bg-red-600 px-2 py-2.5 text-xs font-semibold text-white transition hover:bg-red-700 sm:text-sm"
         >
           <PhoneIcon className="h-4 w-4" />
-          Call Now
+          Call
         </a>
+        <Link
+          href={requestHref}
+          className="inline-flex flex-col items-center justify-center gap-1 rounded-xl border border-red-200 bg-red-50 px-2 py-2.5 text-xs font-semibold text-red-600 transition hover:bg-red-100 sm:text-sm"
+        >
+          <DropletIcon className="h-4 w-4" />
+          Request Blood
+        </Link>
       </div>
     </article>
   );

@@ -32,6 +32,10 @@ You can also create the bucket manually under **Storage** → **New bucket** (na
 
 Run **`003_blood_requests.sql`** in **SQL Editor** to create the `blood_requests` table used for the homepage feed and `/dashboard/requests`.
 
+## 2d. Total points (Phase 1 display column)
+
+Run **`004_total_points.sql`** to add `total_points` on `profiles` (defaults to `0`; no points logic yet).
+
 ## 3. Auth settings (recommended for local dev)
 
 Dashboard → **Authentication** → **Providers** → Email:

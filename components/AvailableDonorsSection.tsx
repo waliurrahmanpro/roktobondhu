@@ -1,55 +1,92 @@
 "use client";
 
-import { useActionState, useEffect, useState, useTransition } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
 import {
   searchDonorsAction,
   loadMoreDonorsAction,
-  type DonorSearchState,
+  type DonorListState,
+  type DonorSearchFilters,
 } from "@/app/actions/donors";
 import { DonorCard } from "@/components/DonorCard";
 import { BLOOD_GROUPS, inputClassName } from "@/lib/constants";
+import type { Profile } from "@/lib/types/database";
 
-const initialState: DonorSearchState = {
-  donors: [],
-  searched: false,
-  hasMore: false,
-  totalCount: 0,
+type AvailableDonorsSectionProps = {
+  initialDonors: Profile[];
+  initialHasMore: boolean;
+  initialTotalCount: number;
 };
 
-export function DonorSearch() {
-  const [state, formAction, searchPending] = useActionState(
-    searchDonorsAction,
-    initialState
+export function AvailableDonorsSection({
+  initialDonors,
+  initialHasMore,
+  initialTotalCount,
+}: AvailableDonorsSectionProps) {
+  const initialSnapshot = useRef({
+    donors: initialDonors,
+    hasMore: initialHasMore,
+    totalCount: initialTotalCount,
+  });
+
+  const [donors, setDonors] = useState(initialDonors);
+  const [mode, setMode] = useState<"all" | "search">("all");
+  const [hasMore, setHasMore] = useState(initialHasMore);
+  const [totalCount, setTotalCount] = useState(initialTotalCount);
+  const [searchFilters, setSearchFilters] = useState<DonorSearchFilters | null>(
+    null
   );
-  const [extraDonors, setExtraDonors] = useState<DonorSearchState["donors"]>(
-    []
-  );
-  const [hasMore, setHasMore] = useState(false);
+  const [searched, setSearched] = useState(false);
+  const [searchError, setSearchError] = useState<string | undefined>();
   const [loadMorePending, startLoadMore] = useTransition();
 
-  useEffect(() => {
-    if (state.searched) {
-      setExtraDonors([]);
-      setHasMore(state.hasMore ?? false);
+  const [, formAction, searchPending] = useActionState(
+    async (prev: DonorListState, formData: FormData) => {
+      const result = await searchDonorsAction(prev, formData);
+      setDonors(result.donors);
+      setMode(result.mode);
+      setHasMore(result.hasMore);
+      setTotalCount(result.totalCount);
+      setSearchFilters(result.filters ?? null);
+      setSearched(result.searched);
+      setSearchError(result.error);
+      return result;
+    },
+    {
+      donors: initialDonors,
+      mode: "all",
+      searched: false,
+      hasMore: initialHasMore,
+      totalCount: initialTotalCount,
     }
-  }, [state]);
+  );
 
-  const allDonors = [...(state.donors ?? []), ...extraDonors];
-  const showingCount = allDonors.length;
-  const totalCount = state.totalCount ?? 0;
+  function handleReset() {
+    const snap = initialSnapshot.current;
+    setDonors(snap.donors);
+    setMode("all");
+    setHasMore(snap.hasMore);
+    setTotalCount(snap.totalCount);
+    setSearchFilters(null);
+    setSearched(false);
+    setSearchError(undefined);
+  }
 
   function handleLoadMore() {
-    if (!state.filters) return;
-
     startLoadMore(async () => {
       const result = await loadMoreDonorsAction(
-        state.filters!,
-        showingCount
+        mode,
+        searchFilters,
+        donors.length
       );
-      setExtraDonors((prev) => [...prev, ...result.donors]);
-      setHasMore(result.hasMore ?? false);
+      setDonors((prev) => [...prev, ...result.donors]);
+      setHasMore(result.hasMore);
+      setTotalCount(result.totalCount);
     });
   }
+
+  const showingCount = donors.length;
+  const emptyMessage =
+    mode === "search" ? "No donors found." : "No available donors right now.";
 
   return (
     <>
@@ -68,13 +105,10 @@ export function DonorSearch() {
             <select
               id="blood_group"
               name="blood_group"
-              required
               defaultValue=""
               className={inputClassName}
             >
-              <option value="" disabled>
-                Select group
-              </option>
+              <option value="">Any blood group</option>
               {BLOOD_GROUPS.map((g) => (
                 <option key={g} value={g}>
                   {g}
@@ -102,7 +136,7 @@ export function DonorSearch() {
               htmlFor="upazila"
               className="mb-2 block text-sm font-medium text-gray-700"
             >
-              Area / Thana
+              Upazila / Area
             </label>
             <input
               id="upazila"
@@ -112,7 +146,7 @@ export function DonorSearch() {
               className={inputClassName}
             />
           </div>
-          <div className="flex items-end sm:col-span-2 lg:col-span-1">
+          <div className="flex flex-col gap-2 sm:col-span-2 lg:col-span-1 sm:justify-end">
             <button
               type="submit"
               disabled={searchPending}
@@ -120,33 +154,42 @@ export function DonorSearch() {
             >
               {searchPending ? "Searching…" : "Search Donors"}
             </button>
+            {searched && (
+              <button
+                type="button"
+                onClick={handleReset}
+                className="w-full rounded-xl border border-gray-200 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50"
+              >
+                Show all donors
+              </button>
+            )}
           </div>
         </div>
       </form>
 
       <div className="mt-12">
-        {state.error && (
+        {searchError && (
           <p className="rounded-lg bg-red-50 px-4 py-3 text-center text-sm text-red-700">
-            {state.error}
+            {searchError}
           </p>
         )}
 
-        {state.searched && !state.error && allDonors.length === 0 && (
+        {donors.length === 0 && (mode === "all" || searched) && !searchError && (
           <p className="rounded-xl border border-dashed border-gray-200 bg-gray-50 py-12 text-center text-gray-600">
-            No donors found.
+            {emptyMessage}
           </p>
         )}
 
-        {allDonors.length > 0 && (
+        {donors.length > 0 && (
           <>
-            {totalCount > 0 && (
-              <p className="mb-6 text-center text-sm text-gray-500">
-                Showing {showingCount} of {totalCount} donor
-                {totalCount === 1 ? "" : "s"} · sorted by most recently active
-              </p>
-            )}
+            <p className="mb-6 text-center text-sm text-gray-500">
+              Showing {showingCount} of {totalCount} available donor
+              {totalCount === 1 ? "" : "s"}
+              {mode === "search" ? " (filtered)" : ""} · most recently active
+              first
+            </p>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {allDonors.map((donor) => (
+              {donors.map((donor) => (
                 <DonorCard key={donor.id} donor={donor} />
               ))}
             </div>

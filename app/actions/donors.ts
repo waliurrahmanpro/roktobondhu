@@ -1,88 +1,91 @@
 "use server";
 
-import { searchDonors } from "@/lib/data/search-donors";
+import {
+  queryAvailableDonors,
+  type DonorFilters,
+} from "@/lib/data/donors";
 import type { BloodGroup, Profile } from "@/lib/types/database";
 import { BLOOD_GROUPS } from "@/lib/constants";
 
 export type DonorSearchFilters = {
-  bloodGroup: BloodGroup;
+  bloodGroup: string;
   district: string;
   upazila: string;
 };
 
-export type DonorSearchState = {
+export type DonorListState = {
   donors: Profile[];
+  mode: "all" | "search";
   searched: boolean;
   error?: string;
-  hasMore?: boolean;
-  totalCount?: number;
+  hasMore: boolean;
+  totalCount: number;
   filters?: DonorSearchFilters;
 };
 
 const VALID_GROUPS = new Set<string>(BLOOD_GROUPS);
 
-function parseFilters(formData: FormData): DonorSearchFilters | { error: string } {
-  const bloodGroup = String(formData.get("blood_group") ?? "").trim();
-  const district = String(formData.get("district") ?? "").trim();
-  const upazila = String(formData.get("upazila") ?? "").trim();
-
-  if (!bloodGroup) {
-    return { error: "Please select a blood group." };
-  }
-
-  if (!VALID_GROUPS.has(bloodGroup)) {
-    return { error: "Please select a valid blood group." };
-  }
-
+function parseFilters(formData: FormData): DonorSearchFilters {
   return {
-    bloodGroup: bloodGroup as BloodGroup,
-    district,
-    upazila,
+    bloodGroup: String(formData.get("blood_group") ?? "").trim(),
+    district: String(formData.get("district") ?? "").trim(),
+    upazila: String(formData.get("upazila") ?? "").trim(),
+  };
+}
+
+function toQueryFilters(filters: DonorSearchFilters): DonorFilters {
+  const bloodGroup = filters.bloodGroup;
+  return {
+    bloodGroup:
+      bloodGroup && VALID_GROUPS.has(bloodGroup)
+        ? (bloodGroup as BloodGroup)
+        : undefined,
+    district: filters.district || undefined,
+    upazila: filters.upazila || undefined,
+    offset: 0,
   };
 }
 
 export async function searchDonorsAction(
-  _prevState: DonorSearchState,
+  _prevState: DonorListState,
   formData: FormData
-): Promise<DonorSearchState> {
-  const parsed = parseFilters(formData);
+): Promise<DonorListState> {
+  const filters = parseFilters(formData);
 
-  if ("error" in parsed) {
+  if (filters.bloodGroup && !VALID_GROUPS.has(filters.bloodGroup)) {
     return {
       donors: [],
+      mode: "search",
       searched: true,
-      error: parsed.error,
+      error: "Please select a valid blood group.",
       hasMore: false,
       totalCount: 0,
     };
   }
 
-  const { donors, hasMore, totalCount } = await searchDonors({
-    bloodGroup: parsed.bloodGroup,
-    district: parsed.district || undefined,
-    upazila: parsed.upazila || undefined,
-    offset: 0,
-  });
+  const { donors, hasMore, totalCount } = await queryAvailableDonors(
+    toQueryFilters(filters)
+  );
 
   return {
     donors,
+    mode: "search",
     searched: true,
     hasMore,
     totalCount,
-    filters: parsed,
+    filters,
   };
 }
 
 export async function loadMoreDonorsAction(
-  filters: DonorSearchFilters,
+  mode: "all" | "search",
+  filters: DonorSearchFilters | null,
   offset: number
-): Promise<Pick<DonorSearchState, "donors" | "hasMore" | "totalCount">> {
-  const { donors, hasMore, totalCount } = await searchDonors({
-    bloodGroup: filters.bloodGroup,
-    district: filters.district || undefined,
-    upazila: filters.upazila || undefined,
-    offset,
-  });
+): Promise<Pick<DonorListState, "donors" | "hasMore" | "totalCount">> {
+  const queryFilters: DonorFilters =
+    mode === "search" && filters
+      ? { ...toQueryFilters(filters), offset }
+      : { offset };
 
-  return { donors, hasMore, totalCount };
+  return queryAvailableDonors(queryFilters);
 }
