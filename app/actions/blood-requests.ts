@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { assertUserNotBanned } from "@/lib/banned";
 import type { AuthActionState } from "@/app/actions/auth";
 import type { BloodGroup, UrgencyLevel } from "@/lib/types/database";
 
@@ -19,6 +20,11 @@ export async function createBloodRequest(
 
   if (!user) {
     redirect("/login?redirect=/dashboard/requests");
+  }
+
+  const banError = await assertUserNotBanned(user.id);
+  if (banError) {
+    return { error: banError };
   }
 
   const patientName = String(formData.get("patient_name") ?? "").trim();

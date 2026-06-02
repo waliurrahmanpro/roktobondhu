@@ -57,6 +57,22 @@ Run **`007_donation_completion_points.sql`** for:
 
 (If you need the filename `006_donation_completion_points.sql`, use the same SQL as `007`; `006` is already used for notification titles.)
 
+## 2h. Admin panel (Phase 5)
+
+Run **`009_admin_panel.sql`** for:
+
+- `admin_users` — who can access `/admin`
+- `profiles.is_banned` — suspend accounts
+- `donations.report_status` — `pending` / `resolved` / `dismissed`
+- `blood_requests.status` — `active` / `completed` / `removed`
+- `is_admin()` and admin RLS policies
+
+Then grant yourself admin (replace with your auth user UUID from **Authentication → Users**):
+
+```sql
+insert into public.admin_users (user_id) values ('your-user-uuid-here');
+```
+
 ## 2g. Reported donations & trust (Phase 4)
 
 Run **`008_reported_donations.sql`** for:

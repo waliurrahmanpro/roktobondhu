@@ -23,6 +23,7 @@ export type Profile = {
   total_points: number;
   total_donations: number;
   reported_donations: number;
+  is_banned: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -36,11 +37,13 @@ export type ProfileInsert = Omit<
   | "total_points"
   | "total_donations"
   | "reported_donations"
+  | "is_banned"
 > & {
   profile_picture_url?: string | null;
   total_points?: number;
   total_donations?: number;
   reported_donations?: number;
+  is_banned?: boolean;
 };
 
 export type ProfileUpdate = Partial<
@@ -48,6 +51,8 @@ export type ProfileUpdate = Partial<
 >;
 
 export type UrgencyLevel = "critical" | "high" | "medium" | "low";
+
+export type BloodRequestStatus = "active" | "completed" | "removed";
 
 export type BloodRequest = {
   id: string;
@@ -59,14 +64,17 @@ export type BloodRequest = {
   contact_number: string;
   urgency_level: UrgencyLevel;
   request_date: string;
+  status: BloodRequestStatus;
   created_at: string;
   updated_at: string;
 };
 
 export type BloodRequestInsert = Omit<
   BloodRequest,
-  "id" | "created_at" | "updated_at"
->;
+  "id" | "created_at" | "updated_at" | "status"
+> & {
+  status?: BloodRequestStatus;
+};
 
 export type DonorRequestStatus =
   | "pending"
@@ -77,6 +85,8 @@ export type DonorRequestStatus =
 
 export type DonationFeedbackStatus = "fine" | "reported";
 
+export type DonationReportStatus = "pending" | "resolved" | "dismissed";
+
 export type Donation = {
   id: string;
   donor_request_id: string;
@@ -84,7 +94,14 @@ export type Donation = {
   receiver_id: string;
   feedback_status: DonationFeedbackStatus;
   feedback_message: string | null;
+  report_status: DonationReportStatus | null;
   completed_at: string;
+};
+
+export type AdminUser = {
+  id: string;
+  user_id: string;
+  created_at: string;
 };
 
 export type DonationWithProfiles = Donation & {
@@ -171,6 +188,12 @@ export type Database = {
         Row: Donation;
         Insert: Omit<Donation, "id" | "completed_at">;
         Update: Partial<Donation>;
+        Relationships: [];
+      };
+      admin_users: {
+        Row: AdminUser;
+        Insert: Omit<AdminUser, "id" | "created_at">;
+        Update: Partial<AdminUser>;
         Relationships: [];
       };
     };

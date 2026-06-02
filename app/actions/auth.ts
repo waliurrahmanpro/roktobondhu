@@ -28,6 +28,26 @@ export async function login(
     return { error: error.message };
   }
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_banned")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (profile?.is_banned) {
+      await supabase.auth.signOut();
+      return {
+        error:
+          "Your account has been suspended. Contact support if you believe this is a mistake.",
+      };
+    }
+  }
+
   revalidatePath("/", "layout");
 
   const redirectTo = String(formData.get("redirect") ?? "").trim();

@@ -17,6 +17,7 @@ export async function fetchTopDonors(limit = 5): Promise<Profile[]> {
   const { data, error } = await supabase
     .from("profiles")
     .select("*")
+    .eq("is_banned", false)
     .order("total_points", { ascending: false })
     .order("total_donations", { ascending: false })
     .limit(limit);

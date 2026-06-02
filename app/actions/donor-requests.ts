@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { assertUserNotBanned } from "@/lib/banned";
 import type { DonorRequestStatus } from "@/lib/types/database";
 
 export type ActionResult = {
@@ -23,6 +24,9 @@ export async function createDonorRequest(
     return { error: "Please log in to request blood from a donor." };
   }
 
+  const banError = await assertUserNotBanned(user.id);
+  if (banError) return { error: banError };
+
   const donorId = String(formData.get("donor_id") ?? "").trim();
 
   if (!donorId) {
@@ -35,7 +39,7 @@ export async function createDonorRequest(
 
   const { data: donorProfile } = await supabase
     .from("profiles")
-    .select("user_id, donation_availability, full_name")
+    .select("user_id, donation_availability, full_name, is_banned")
     .eq("user_id", donorId)
     .single();
 
@@ -44,6 +48,10 @@ export async function createDonorRequest(
       error:
         "Donor profile not found. Ask them to complete their profile first.",
     };
+  }
+
+  if (donorProfile.is_banned) {
+    return { error: "This donor is not available." };
   }
 
   if (!donorProfile.donation_availability) {
@@ -111,6 +119,9 @@ async function updateRequestStatus(
   if (!user) {
     return { error: "Please log in." };
   }
+
+  const banError = await assertUserNotBanned(user.id);
+  if (banError) return { error: banError };
 
   const { data: request, error: fetchError } = await supabase
     .from("donor_requests")

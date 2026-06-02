@@ -33,6 +33,7 @@ export async function queryAvailableDonors(
     .from("profiles")
     .select("*", { count: "exact", head: true })
     .eq("donation_availability", true)
+    .eq("is_banned", false)
     .neq("full_name", "New Donor");
 
   if (bloodGroup) {
@@ -58,6 +59,7 @@ export async function queryAvailableDonors(
     .from("profiles")
     .select("*")
     .eq("donation_availability", true)
+    .eq("is_banned", false)
     .neq("full_name", "New Donor")
     .order("updated_at", { ascending: false });
 

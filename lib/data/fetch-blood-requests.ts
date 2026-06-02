@@ -6,6 +6,7 @@ export async function fetchPublicBloodRequests(limit = 50) {
   const { data, error } = await supabase
     .from("blood_requests")
     .select("*")
+    .eq("status", "active")
     .order("created_at", { ascending: false })
     .limit(limit);
 
