@@ -5,6 +5,7 @@ export const DONOR_PAGE_SIZE = 12;
 
 export type DonorFilters = {
   bloodGroup?: BloodGroup;
+  division?: string;
   district?: string;
   upazila?: string;
   offset?: number;
@@ -16,18 +17,15 @@ export type DonorQueryResult = {
   totalCount: number;
 };
 
-function sanitizeIlike(value: string) {
-  return value.replace(/[%_]/g, "").trim();
-}
-
 export async function queryAvailableDonors(
   filters: DonorFilters = {}
 ): Promise<DonorQueryResult> {
-  const { offset = 0, bloodGroup, district, upazila } = filters;
+  const { offset = 0, bloodGroup, division, district, upazila } = filters;
   const supabase = await createClient();
 
-  const districtTrimmed = district ? sanitizeIlike(district) : "";
-  const upazilaTrimmed = upazila ? sanitizeIlike(upazila) : "";
+  const divisionTrimmed = division?.trim() ?? "";
+  const districtTrimmed = district?.trim() ?? "";
+  const upazilaTrimmed = upazila?.trim() ?? "";
 
   let countQuery = supabase
     .from("profiles")
@@ -39,11 +37,14 @@ export async function queryAvailableDonors(
   if (bloodGroup) {
     countQuery = countQuery.eq("blood_group", bloodGroup);
   }
+  if (divisionTrimmed) {
+    countQuery = countQuery.eq("division", divisionTrimmed);
+  }
   if (districtTrimmed) {
-    countQuery = countQuery.ilike("district", `%${districtTrimmed}%`);
+    countQuery = countQuery.eq("district", districtTrimmed);
   }
   if (upazilaTrimmed) {
-    countQuery = countQuery.ilike("upazila", `%${upazilaTrimmed}%`);
+    countQuery = countQuery.eq("upazila", upazilaTrimmed);
   }
 
   const { count, error: countError } = await countQuery;
@@ -66,11 +67,14 @@ export async function queryAvailableDonors(
   if (bloodGroup) {
     dataQuery = dataQuery.eq("blood_group", bloodGroup);
   }
+  if (divisionTrimmed) {
+    dataQuery = dataQuery.eq("division", divisionTrimmed);
+  }
   if (districtTrimmed) {
-    dataQuery = dataQuery.ilike("district", `%${districtTrimmed}%`);
+    dataQuery = dataQuery.eq("district", districtTrimmed);
   }
   if (upazilaTrimmed) {
-    dataQuery = dataQuery.ilike("upazila", `%${upazilaTrimmed}%`);
+    dataQuery = dataQuery.eq("upazila", upazilaTrimmed);
   }
 
   const { data, error } = await dataQuery.range(

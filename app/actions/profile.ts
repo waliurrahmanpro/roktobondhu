@@ -10,6 +10,7 @@ import {
   getAvatarStoragePath,
   validateAvatarFile,
 } from "@/lib/storage";
+import { validateAndNormalizeLocation } from "@/lib/validate-location";
 
 async function removeUserAvatars(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -41,6 +42,7 @@ export async function updateProfile(
   const division = String(formData.get("division") ?? "").trim();
   const district = String(formData.get("district") ?? "").trim();
   const upazila = String(formData.get("upazila") ?? "").trim();
+  const fullAddress = String(formData.get("full_address") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
   const lastDonationDate = String(formData.get("last_donation_date") ?? "").trim();
   const donationAvailability = formData.get("donation_availability") === "on";
@@ -52,6 +54,15 @@ export async function updateProfile(
 
   if (!fullName || !bloodGroup || !division || !district || !upazila || !phone) {
     return { error: "Please fill in all required fields." };
+  }
+
+  const locationCheck = validateAndNormalizeLocation(
+    division,
+    district,
+    upazila
+  );
+  if (locationCheck.error || !locationCheck.location) {
+    return { error: locationCheck.error ?? "Invalid location." };
   }
 
   let profilePictureUrl: string | null = existingUrl || null;
@@ -90,9 +101,10 @@ export async function updateProfile(
     .update({
       full_name: fullName,
       blood_group: bloodGroup,
-      division,
-      district,
-      upazila,
+      division: locationCheck.location.division,
+      district: locationCheck.location.district,
+      upazila: locationCheck.location.upazila,
+      full_address: fullAddress || null,
       phone,
       last_donation_date: lastDonationDate || null,
       donation_availability: donationAvailability,

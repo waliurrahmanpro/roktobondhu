@@ -8,6 +8,7 @@ import {
   type DonorSearchFilters,
 } from "@/app/actions/donors";
 import { DonorCard } from "@/components/DonorCard";
+import { LocationSearchFilters } from "@/components/LocationSearchFilters";
 import { BLOOD_GROUPS, inputClassName } from "@/lib/constants";
 import type { Profile } from "@/lib/types/database";
 
@@ -96,8 +97,8 @@ export function AvailableDonorsSection({
         action={formAction}
         className="mx-auto mt-12 max-w-4xl rounded-2xl border border-gray-100 bg-white p-6 shadow-xl shadow-gray-100 sm:p-8"
       >
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="sm:col-span-2 lg:col-span-1">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <div>
             <label
               htmlFor="blood_group"
               className="mb-2 block text-sm font-medium text-gray-700"
@@ -118,37 +119,8 @@ export function AvailableDonorsSection({
               ))}
             </select>
           </div>
-          <div>
-            <label
-              htmlFor="district"
-              className="mb-2 block text-sm font-medium text-gray-700"
-            >
-              District
-            </label>
-            <input
-              id="district"
-              name="district"
-              type="text"
-              placeholder="e.g. Dhaka"
-              className={inputClassName}
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="upazila"
-              className="mb-2 block text-sm font-medium text-gray-700"
-            >
-              Upazila / Area
-            </label>
-            <input
-              id="upazila"
-              name="upazila"
-              type="text"
-              placeholder="e.g. Mirpur"
-              className={inputClassName}
-            />
-          </div>
-          <div className="flex flex-col gap-2 sm:col-span-2 lg:col-span-1 sm:justify-end">
+          <LocationSearchFilters />
+          <div className="flex flex-col gap-2 sm:col-span-2 xl:col-span-1 sm:justify-end">
             <button
               type="submit"
               disabled={searchPending}

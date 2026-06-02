@@ -76,6 +76,12 @@ export function PublicDonorProfileCard({
           <dt className="text-sm text-gray-500">Upazila</dt>
           <dd className="font-semibold text-gray-900">{profile.upazila}</dd>
         </div>
+        {profile.full_address && (
+          <div className="border-b border-gray-100 py-4 sm:col-span-2">
+            <dt className="text-sm text-gray-500">Full address</dt>
+            <dd className="font-semibold text-gray-900">{profile.full_address}</dd>
+          </div>
+        )}
         <div className="border-b border-gray-100 py-4 sm:col-span-2">
           <dt className="text-sm text-gray-500">Last donation</dt>
           <dd className="font-semibold text-gray-900">

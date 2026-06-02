@@ -61,6 +61,16 @@ Run **`007_donation_completion_points.sql`** for:
 
 Run **`009_admin_panel.sql`** for moderation (`is_banned`, report status, blood request status).
 
+## 2j. Location dataset & full address
+
+Run **`011_location_dataset_and_full_address.sql`** to add `full_address` and public `bd_*` reference tables.
+
+The cascading dropdown dataset lives in **`lib/data/bangladesh-locations.json`** (8 divisions, 64 districts, 494 upazilas). Regenerate after updating `bd-geodata`:
+
+```bash
+node scripts/generate-bangladesh-locations.mjs
+```
+
 ## 2i. Super admin (Phase 6)
 
 Run **`010_super_admin_system.sql`** for:

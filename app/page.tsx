@@ -172,8 +172,8 @@ export default async function Home() {
                   Request Blood
                 </strong>{" "}
                 on a card to send a private request to that donor (not a public
-                post). Use search to filter by blood group, district, or
-                upazila.
+                post). Use search to filter by blood group, division, district,
+                or upazila.
               </p>
             </div>
 

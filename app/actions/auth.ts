@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { fetchSiteSettings } from "@/lib/settings";
+import { validateAndNormalizeLocation } from "@/lib/validate-location";
 import type { BloodGroup } from "@/lib/types/database";
 
 export type AuthActionState = {
@@ -71,6 +72,7 @@ export async function register(
   const division = String(formData.get("division") ?? "").trim();
   const district = String(formData.get("district") ?? "").trim();
   const upazila = String(formData.get("upazila") ?? "").trim();
+  const fullAddress = String(formData.get("full_address") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
   const lastDonationDate = String(formData.get("last_donation_date") ?? "").trim();
   const donationAvailability = formData.get("donation_availability") === "on";
@@ -87,6 +89,15 @@ export async function register(
     return { error: "Please fill in all required profile fields." };
   }
 
+  const locationCheck = validateAndNormalizeLocation(
+    division,
+    district,
+    upazila
+  );
+  if (locationCheck.error || !locationCheck.location) {
+    return { error: locationCheck.error ?? "Invalid location." };
+  }
+
   const settings = await fetchSiteSettings();
   if (!settings.registration_enabled) {
     return { error: "New registrations are currently closed." };
@@ -101,9 +112,10 @@ export async function register(
       data: {
         full_name: fullName,
         blood_group: bloodGroup,
-        division,
-        district,
-        upazila,
+        division: locationCheck.location.division,
+        district: locationCheck.location.district,
+        upazila: locationCheck.location.upazila,
+        full_address: fullAddress || null,
         phone,
         phone_number: phone,
         last_donation_date: lastDonationDate || null,
@@ -122,9 +134,10 @@ export async function register(
         user_id: data.user.id,
         full_name: fullName,
         blood_group: bloodGroup,
-        division,
-        district,
-        upazila,
+        division: locationCheck.location.division,
+        district: locationCheck.location.district,
+        upazila: locationCheck.location.upazila,
+        full_address: fullAddress || null,
         phone,
         last_donation_date: lastDonationDate || null,
         donation_availability: donationAvailability,

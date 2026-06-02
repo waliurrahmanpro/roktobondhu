@@ -1,12 +1,8 @@
-import {
-  BLOOD_GROUPS,
-  DIVISIONS,
-  inputClassName,
-  labelClassName,
-} from "@/lib/constants";
+import { BLOOD_GROUPS, inputClassName, labelClassName } from "@/lib/constants";
 import type { Profile } from "@/lib/types/database";
 import { ProfilePictureUpload } from "@/components/ProfilePictureUpload";
 import { DonationAvailabilityToggle } from "@/components/DonationAvailabilityToggle";
+import { LocationCascadingSelect } from "@/components/LocationCascadingSelect";
 
 type ProfileFieldsProps = {
   profile?: Profile | null;
@@ -96,56 +92,25 @@ export function ProfileFields({
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div>
-          <label htmlFor="division" className={labelClassName}>
-            Division
-          </label>
-          <select
-            id="division"
-            name="division"
-            required
-            defaultValue={profile?.division ?? ""}
-            className={inputClassName}
-          >
-            <option value="" disabled>
-              Select division
-            </option>
-            {DIVISIONS.map((d) => (
-              <option key={d} value={d}>
-                {d}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="district" className={labelClassName}>
-            District
-          </label>
-          <input
-            id="district"
-            name="district"
-            type="text"
-            required
-            placeholder="e.g. Dhaka"
-            defaultValue={profile?.district ?? ""}
-            className={inputClassName}
-          />
-        </div>
-        <div>
-          <label htmlFor="upazila" className={labelClassName}>
-            Upazila
-          </label>
-          <input
-            id="upazila"
-            name="upazila"
-            type="text"
-            required
-            placeholder="e.g. Mirpur"
-            defaultValue={profile?.upazila ?? ""}
-            className={inputClassName}
-          />
-        </div>
+      <LocationCascadingSelect
+        defaultDivision={profile?.division}
+        defaultDistrict={profile?.district}
+        defaultUpazila={profile?.upazila}
+        idPrefix="profile"
+      />
+
+      <div>
+        <label htmlFor="full_address" className={labelClassName}>
+          Full address (optional)
+        </label>
+        <textarea
+          id="full_address"
+          name="full_address"
+          rows={3}
+          placeholder="House/road, area, landmark…"
+          defaultValue={profile?.full_address ?? ""}
+          className={inputClassName}
+        />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

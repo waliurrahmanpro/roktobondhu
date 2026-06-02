@@ -84,6 +84,9 @@ export function ProfileDisplay({ profile, email }: ProfileDisplayProps) {
         <DetailRow label="Division" value={profile.division} />
         <DetailRow label="District" value={profile.district} />
         <DetailRow label="Upazila" value={profile.upazila} />
+        {profile.full_address && (
+          <DetailRow label="Full address" value={profile.full_address} />
+        )}
         <DetailRow label="Phone number" value={profile.phone} />
         <DetailRow
           label="Last donation date"

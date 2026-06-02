@@ -16,16 +16,7 @@ export const URGENCY_LEVELS = [
   { value: "low", label: "Low" },
 ] as const;
 
-export const DIVISIONS = [
-  "Barishal",
-  "Chattogram",
-  "Dhaka",
-  "Khulna",
-  "Mymensingh",
-  "Rajshahi",
-  "Rangpur",
-  "Sylhet",
-] as const;
+export { BANGLADESH_DIVISIONS as DIVISIONS } from "@/lib/bangladesh-locations";
 
 export const POINTS_PER_DONATION = 10;
 

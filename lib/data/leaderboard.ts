@@ -93,7 +93,7 @@ export async function fetchPublicDonorProfile(
   const { data, error } = await supabase
     .from("profiles")
     .select(
-      "id, user_id, full_name, blood_group, division, district, upazila, profile_picture_url, total_points, total_donations, reported_donations, donation_availability, last_donation_date, created_at, updated_at"
+      "id, user_id, full_name, blood_group, division, district, upazila, full_address, profile_picture_url, total_points, total_donations, reported_donations, donation_availability, last_donation_date, created_at, updated_at"
     )
     .eq("user_id", userId)
     .maybeSingle();

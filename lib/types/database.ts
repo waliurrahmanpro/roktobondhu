@@ -18,6 +18,7 @@ export type Profile = {
   division: string;
   district: string;
   upazila: string;
+  full_address: string | null;
   phone: string;
   last_donation_date: string | null;
   donation_availability: boolean;
@@ -42,8 +43,10 @@ export type ProfileInsert = Omit<
   | "reported_donations"
   | "is_banned"
   | "role"
+  | "full_address"
 > & {
   profile_picture_url?: string | null;
+  full_address?: string | null;
   total_points?: number;
   total_donations?: number;
   reported_donations?: number;
@@ -179,6 +182,7 @@ export type PublicDonorProfile = Pick<
   | "division"
   | "district"
   | "upazila"
+  | "full_address"
   | "profile_picture_url"
   | "total_points"
   | "total_donations"

@@ -6,6 +6,7 @@ import { DropletIcon } from "@/components/DropletIcon";
 import { RequestBloodButton } from "@/components/RequestBloodButton";
 import { DonorStatsBlock } from "@/components/DonorStatsBlock";
 import { TrustStatusLabel } from "@/components/TrustStatusLabel";
+import { formatLocationLine } from "@/lib/bangladesh-locations";
 
 type DonorCardProps = {
   donor: Profile;
@@ -84,16 +85,18 @@ export function DonorCard({ donor, isLoggedIn }: DonorCardProps) {
             />
           </div>
 
-          <dl className="mt-3 space-y-1 text-sm">
-            <div className="flex gap-2">
-              <dt className="text-gray-500">District:</dt>
-              <dd className="font-medium text-gray-900">{donor.district}</dd>
-            </div>
-            <div className="flex gap-2">
-              <dt className="text-gray-500">Upazila:</dt>
-              <dd className="font-medium text-gray-900">{donor.upazila}</dd>
-            </div>
-          </dl>
+          <p className="mt-3 text-sm text-gray-600">
+            {formatLocationLine({
+              upazila: donor.upazila,
+              district: donor.district,
+              division: donor.division,
+            })}
+          </p>
+          {donor.full_address && (
+            <p className="mt-1 line-clamp-2 text-xs text-gray-500">
+              {donor.full_address}
+            </p>
+          )}
         </div>
       </div>
 

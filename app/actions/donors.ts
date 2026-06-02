@@ -9,6 +9,7 @@ import { BLOOD_GROUPS } from "@/lib/constants";
 
 export type DonorSearchFilters = {
   bloodGroup: string;
+  division: string;
   district: string;
   upazila: string;
 };
@@ -28,6 +29,7 @@ const VALID_GROUPS = new Set<string>(BLOOD_GROUPS);
 function parseFilters(formData: FormData): DonorSearchFilters {
   return {
     bloodGroup: String(formData.get("blood_group") ?? "").trim(),
+    division: String(formData.get("division") ?? "").trim(),
     district: String(formData.get("district") ?? "").trim(),
     upazila: String(formData.get("upazila") ?? "").trim(),
   };
@@ -40,6 +42,7 @@ function toQueryFilters(filters: DonorSearchFilters): DonorFilters {
       bloodGroup && VALID_GROUPS.has(bloodGroup)
         ? (bloodGroup as BloodGroup)
         : undefined,
+    division: filters.division || undefined,
     district: filters.district || undefined,
     upazila: filters.upazila || undefined,
     offset: 0,
