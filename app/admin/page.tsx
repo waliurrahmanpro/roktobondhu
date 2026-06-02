@@ -17,7 +17,7 @@ export default async function AdminDashboardPage() {
     <>
       <AdminNav currentPath="/admin" />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <AdminStatCard label="Total users" value={stats.totalUsers} />
         <AdminStatCard
           label="Active donors"
@@ -27,6 +27,19 @@ export default async function AdminDashboardPage() {
         <AdminStatCard label="Blood requests" value={stats.totalBloodRequests} />
         <AdminStatCard label="Donations" value={stats.totalDonations} />
         <AdminStatCard label="Reports" value={stats.totalReports} />
+        <AdminStatCard
+          label="Matches generated"
+          value={stats.totalMatchesGenerated}
+          hint="Smart matching logs"
+        />
+        <AdminStatCard
+          label="Accepted matches"
+          value={stats.acceptedMatches}
+        />
+        <AdminStatCard
+          label="Donations from matches"
+          value={stats.successfulDonationsFromMatches}
+        />
       </div>
 
       <div className="mt-10 grid gap-8 lg:grid-cols-2">

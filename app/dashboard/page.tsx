@@ -12,6 +12,9 @@ import {
   fetchUnreadNotificationCount,
 } from "@/lib/data/donor-requests";
 import { fetchActiveAnnouncements } from "@/lib/data/super-admin";
+import { NearbyBloodRequestsWidget } from "@/components/NearbyBloodRequestsWidget";
+import { NidVerificationSection } from "@/components/NidVerificationSection";
+import { isDonationAgeEligible } from "@/lib/eligibility";
 
 export const metadata = {
   title: "Dashboard — RoktoBondhu",
@@ -133,6 +136,18 @@ export default async function DashboardPage() {
         </div>
 
         <ProfileDisplay profile={profile} email={user.email} />
+
+        {isDonationAgeEligible(profile.date_of_birth) && (
+          <div className="mt-8">
+            <NidVerificationSection profile={profile} />
+          </div>
+        )}
+
+        {profile.donation_availability && !profile.is_banned && (
+          <div className="mt-8">
+            <NearbyBloodRequestsWidget donorUserId={user.id} />
+          </div>
+        )}
 
         <div className="mt-8 rounded-2xl border border-gray-100 bg-white p-8 shadow-lg shadow-gray-100">
           <h2 className="text-lg font-semibold text-gray-900">Edit profile</h2>

@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { fetchProfilesByUserIds } from "@/lib/data/profiles";
+import { calculateAge } from "@/lib/eligibility";
+import { getNidSignedUrl } from "@/lib/nid-url";
 import type {
   BloodRequest,
   BloodRequestStatus,
@@ -14,6 +16,9 @@ export type AdminStats = {
   totalBloodRequests: number;
   totalDonations: number;
   totalReports: number;
+  totalMatchesGenerated: number;
+  acceptedMatches: number;
+  successfulDonationsFromMatches: number;
 };
 
 export type ReportedDonationRow = Donation & {
@@ -89,19 +94,33 @@ export async function fetchAdminStats(): Promise<AdminStats> {
     requestsRes,
     donationsRes,
     reportsRes,
+    matchesRes,
+    acceptedRes,
+    donatedRes,
   ] = await Promise.all([
     supabase.from("profiles").select("*", { count: "exact", head: true }),
     supabase
       .from("profiles")
       .select("*", { count: "exact", head: true })
       .eq("donation_availability", true)
-      .eq("is_banned", false),
+      .eq("is_banned", false)
+      .eq("verification_status", "approved")
+      .not("date_of_birth", "is", null),
     supabase.from("blood_requests").select("*", { count: "exact", head: true }),
     supabase.from("donations").select("*", { count: "exact", head: true }),
     supabase
       .from("donations")
       .select("*", { count: "exact", head: true })
       .eq("feedback_status", "reported"),
+    supabase.from("match_logs").select("*", { count: "exact", head: true }),
+    supabase
+      .from("match_logs")
+      .select("*", { count: "exact", head: true })
+      .not("accepted_at", "is", null),
+    supabase
+      .from("match_logs")
+      .select("*", { count: "exact", head: true })
+      .not("donation_completed_at", "is", null),
   ]);
 
   return {
@@ -110,6 +129,9 @@ export async function fetchAdminStats(): Promise<AdminStats> {
     totalBloodRequests: requestsRes.count ?? 0,
     totalDonations: donationsRes.count ?? 0,
     totalReports: reportsRes.count ?? 0,
+    totalMatchesGenerated: matchesRes.count ?? 0,
+    acceptedMatches: acceptedRes.count ?? 0,
+    successfulDonationsFromMatches: donatedRes.count ?? 0,
   };
 }
 
@@ -323,4 +345,45 @@ export function formatBloodRequestStatus(status: BloodRequestStatus): string {
   if (status === "removed") return "Removed";
   if (status === "completed") return "Completed";
   return "Active";
+}
+
+export type PendingVerificationRow = Profile & {
+  age: number | null;
+  nidFrontSignedUrl: string | null;
+  nidBackSignedUrl: string | null;
+};
+
+export async function fetchPendingVerifications(): Promise<
+  PendingVerificationRow[]
+> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("verification_status", "pending")
+    .order("updated_at", { ascending: false });
+
+  if (error) {
+    console.error("Pending verifications fetch failed:", error.message);
+    return [];
+  }
+
+  const rows = await Promise.all(
+    (data ?? []).map(async (profile) => {
+      const p = profile as Profile;
+      const [nidFrontSignedUrl, nidBackSignedUrl] = await Promise.all([
+        getNidSignedUrl(p.nid_front_url),
+        getNidSignedUrl(p.nid_back_url),
+      ]);
+      return {
+        ...p,
+        age: p.date_of_birth ? calculateAge(p.date_of_birth) : null,
+        nidFrontSignedUrl,
+        nidBackSignedUrl,
+      };
+    })
+  );
+
+  return rows;
 }

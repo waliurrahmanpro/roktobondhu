@@ -2,6 +2,8 @@ import Image from "next/image";
 import { DonorBadgeLabel } from "@/components/DonorBadgeLabel";
 import { DropletIcon } from "@/components/DropletIcon";
 import { TrustStatusLabel } from "@/components/TrustStatusLabel";
+import { VerifiedDonorBadge } from "@/components/VerifiedDonorBadge";
+import { calculateAge } from "@/lib/eligibility";
 import { POINTS_PER_DONATION } from "@/lib/constants";
 import { formatDate } from "@/lib/format";
 import type { Profile } from "@/lib/types/database";
@@ -47,7 +49,10 @@ export function ProfileDisplay({ profile, email }: ProfileDisplayProps) {
             )}
           </div>
           <div className="text-center sm:text-left">
-            <h2 className="text-2xl font-bold">{profile.full_name}</h2>
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+              <h2 className="text-2xl font-bold">{profile.full_name}</h2>
+              <VerifiedDonorBadge verificationStatus={profile.verification_status} />
+            </div>
             <p className="mt-1 text-red-100">{email}</p>
             <div className="mt-3 flex flex-wrap justify-center gap-2 sm:justify-start">
               <span className="rounded-full bg-white px-3 py-1 text-sm font-bold text-red-600">
@@ -81,6 +86,23 @@ export function ProfileDisplay({ profile, email }: ProfileDisplayProps) {
       <dl className="px-6 py-2 sm:px-8">
         <DetailRow label="Full name" value={profile.full_name} />
         <DetailRow label="Blood group" value={profile.blood_group} />
+        <DetailRow
+          label="Date of birth"
+          value={
+            profile.date_of_birth
+              ? `${formatDate(profile.date_of_birth)} (${calculateAge(profile.date_of_birth)} years)`
+              : "Not set"
+          }
+        />
+        <DetailRow
+          label="Verification"
+          value={
+            profile.verification_status === "approved"
+              ? "Verified donor"
+              : profile.verification_status.charAt(0).toUpperCase() +
+                profile.verification_status.slice(1).replace("_", " ")
+          }
+        />
         <DetailRow label="Division" value={profile.division} />
         <DetailRow label="District" value={profile.district} />
         <DetailRow label="Upazila" value={profile.upazila} />

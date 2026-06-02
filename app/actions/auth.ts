@@ -5,6 +5,11 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { fetchSiteSettings } from "@/lib/settings";
 import { validateAndNormalizeLocation } from "@/lib/validate-location";
+import {
+  DONATION_AGE_MESSAGE,
+  enforceDonationAvailability,
+  isDonationAgeEligible,
+} from "@/lib/eligibility";
 import type { BloodGroup } from "@/lib/types/database";
 
 export type AuthActionState = {
@@ -75,7 +80,8 @@ export async function register(
   const fullAddress = String(formData.get("full_address") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
   const lastDonationDate = String(formData.get("last_donation_date") ?? "").trim();
-  const donationAvailability = formData.get("donation_availability") === "on";
+  const dateOfBirth = String(formData.get("date_of_birth") ?? "").trim();
+  const donationRequested = formData.get("donation_availability") === "on";
 
   if (!email || !password) {
     return { error: "Email and password are required." };
@@ -85,9 +91,28 @@ export async function register(
     return { error: "Password must be at least 6 characters." };
   }
 
-  if (!fullName || !bloodGroup || !division || !district || !upazila || !phone) {
+  if (
+    !fullName ||
+    !bloodGroup ||
+    !division ||
+    !district ||
+    !upazila ||
+    !phone ||
+    !dateOfBirth
+  ) {
     return { error: "Please fill in all required profile fields." };
   }
+
+  const dob = new Date(`${dateOfBirth}T00:00:00`);
+  if (Number.isNaN(dob.getTime()) || dob > new Date()) {
+    return { error: "Please enter a valid date of birth." };
+  }
+
+  const donationAvailability = enforceDonationAvailability(
+    dateOfBirth,
+    "not_submitted",
+    donationRequested
+  );
 
   const locationCheck = validateAndNormalizeLocation(
     division,
@@ -119,6 +144,7 @@ export async function register(
         phone,
         phone_number: phone,
         last_donation_date: lastDonationDate || null,
+        date_of_birth: dateOfBirth,
         donation_availability: donationAvailability,
       },
     },
@@ -140,7 +166,9 @@ export async function register(
         full_address: fullAddress || null,
         phone,
         last_donation_date: lastDonationDate || null,
+        date_of_birth: dateOfBirth,
         donation_availability: donationAvailability,
+        verification_status: "not_submitted",
       },
       { onConflict: "user_id" }
     );
@@ -153,10 +181,11 @@ export async function register(
     redirect("/dashboard");
   }
 
-  return {
-    success:
-      "Account created. Check your email to confirm your address, then log in.",
-  };
+  const successMessage = !isDonationAgeEligible(dateOfBirth)
+    ? `Account created. ${DONATION_AGE_MESSAGE} Check your email to confirm, then log in.`
+    : "Account created. Check your email to confirm your address, then log in.";
+
+  return { success: successMessage };
 }
 
 export async function logout() {

@@ -26,11 +26,21 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         action={login}
         redirectTo={redirectTo}
         footer={
-          <AuthFooterLink
-            text="Don't have an account?"
-            href="/register"
-            linkText="Register"
-          />
+          <>
+            <p className="mb-3">
+              <Link
+                href="/forgot-password"
+                className="font-semibold text-red-600 hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </p>
+            <AuthFooterLink
+              text="Don't have an account?"
+              href="/register"
+              linkText="Register"
+            />
+          </>
         }
       />
       <p className="mt-6 text-center">

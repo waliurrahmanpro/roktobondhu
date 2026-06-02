@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { DonorBadgeLabel } from "@/components/DonorBadgeLabel";
+import { VerifiedDonorBadge } from "@/components/VerifiedDonorBadge";
 import { DropletIcon } from "@/components/DropletIcon";
 import { LEADERBOARD_PAGE_SIZE } from "@/lib/data/leaderboard";
 import type { Profile } from "@/lib/types/database";
@@ -54,7 +55,13 @@ export function LeaderboardTable({ donors, page }: LeaderboardTableProps) {
                           </div>
                         )}
                       </div>
-                      {donor.full_name}
+                      <span className="flex flex-col gap-1">
+                        <span>{donor.full_name}</span>
+                        <VerifiedDonorBadge
+                          verificationStatus={donor.verification_status}
+                          compact
+                        />
+                      </span>
                     </Link>
                   </td>
                   <td className="px-4 py-4 font-medium">{donor.blood_group}</td>
@@ -101,7 +108,13 @@ export function LeaderboardTable({ donors, page }: LeaderboardTableProps) {
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-gray-900">{donor.full_name}</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-semibold text-gray-900">{donor.full_name}</p>
+                    <VerifiedDonorBadge
+                      verificationStatus={donor.verification_status}
+                      compact
+                    />
+                  </div>
                   <p className="text-sm text-gray-500">
                     {donor.blood_group} · {donor.district}
                   </p>

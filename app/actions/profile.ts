@@ -11,6 +11,8 @@ import {
   validateAvatarFile,
 } from "@/lib/storage";
 import { validateAndNormalizeLocation } from "@/lib/validate-location";
+import { enforceDonationAvailability } from "@/lib/eligibility";
+import type { VerificationStatus } from "@/lib/types/database";
 
 async function removeUserAvatars(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -45,16 +47,46 @@ export async function updateProfile(
   const fullAddress = String(formData.get("full_address") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
   const lastDonationDate = String(formData.get("last_donation_date") ?? "").trim();
-  const donationAvailability = formData.get("donation_availability") === "on";
+  const dateOfBirth = String(formData.get("date_of_birth") ?? "").trim();
+  const donationRequested = formData.get("donation_availability") === "on";
   const existingUrl = String(
     formData.get("existing_profile_picture_url") ?? ""
   ).trim();
   const removePicture = formData.get("remove_profile_picture") === "true";
   const pictureFile = formData.get("profile_picture");
 
-  if (!fullName || !bloodGroup || !division || !district || !upazila || !phone) {
+  if (
+    !fullName ||
+    !bloodGroup ||
+    !division ||
+    !district ||
+    !upazila ||
+    !phone ||
+    !dateOfBirth
+  ) {
     return { error: "Please fill in all required fields." };
   }
+
+  const dob = new Date(`${dateOfBirth}T00:00:00`);
+  if (Number.isNaN(dob.getTime()) || dob > new Date()) {
+    return { error: "Please enter a valid date of birth." };
+  }
+
+  const { data: existingProfile } = await supabase
+    .from("profiles")
+    .select("verification_status")
+    .eq("user_id", user.id)
+    .single();
+
+  const verificationStatus =
+    (existingProfile?.verification_status as VerificationStatus | undefined) ??
+    "not_submitted";
+
+  const donationAvailability = enforceDonationAvailability(
+    dateOfBirth,
+    verificationStatus,
+    donationRequested
+  );
 
   const locationCheck = validateAndNormalizeLocation(
     division,
@@ -106,6 +138,7 @@ export async function updateProfile(
       upazila: locationCheck.location.upazila,
       full_address: fullAddress || null,
       phone,
+      date_of_birth: dateOfBirth,
       last_donation_date: lastDonationDate || null,
       donation_availability: donationAvailability,
       profile_picture_url: profilePictureUrl,

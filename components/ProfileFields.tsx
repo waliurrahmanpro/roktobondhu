@@ -1,8 +1,16 @@
+"use client";
+
+import { useState } from "react";
 import { BLOOD_GROUPS, inputClassName, labelClassName } from "@/lib/constants";
 import type { Profile } from "@/lib/types/database";
 import { ProfilePictureUpload } from "@/components/ProfilePictureUpload";
 import { DonationAvailabilityToggle } from "@/components/DonationAvailabilityToggle";
 import { LocationCascadingSelect } from "@/components/LocationCascadingSelect";
+import {
+  canEnableDonationAvailability,
+  DONATION_AGE_MESSAGE,
+  isDonationAgeEligible,
+} from "@/lib/eligibility";
 
 type ProfileFieldsProps = {
   profile?: Profile | null;
@@ -17,6 +25,19 @@ export function ProfileFields({
   email = "",
   showProfilePicture = false,
 }: ProfileFieldsProps) {
+  const [dob, setDob] = useState(profile?.date_of_birth ?? "");
+  const ageEligible = isDonationAgeEligible(dob);
+  const canToggleDonation = canEnableDonationAvailability(
+    dob,
+    profile?.verification_status ?? "not_submitted"
+  );
+  const donationDisabled = !ageEligible || profile?.verification_status !== "approved";
+  const donationDisabledReason = !ageEligible
+    ? DONATION_AGE_MESSAGE
+    : profile?.verification_status !== "approved"
+      ? "Complete NID verification before enabling donation availability."
+      : undefined;
+
   return (
     <>
       {showProfilePicture && (
@@ -113,6 +134,25 @@ export function ProfileFields({
         />
       </div>
 
+      <div>
+        <label htmlFor="date_of_birth" className={labelClassName}>
+          Date of birth
+        </label>
+        <input
+          id="date_of_birth"
+          name="date_of_birth"
+          type="date"
+          required
+          max={new Date().toISOString().split("T")[0]}
+          defaultValue={profile?.date_of_birth ?? ""}
+          onChange={(e) => setDob(e.target.value)}
+          className={inputClassName}
+        />
+        {dob && !ageEligible && (
+          <p className="mt-1 text-xs text-amber-800">{DONATION_AGE_MESSAGE}</p>
+        )}
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="last_donation_date" className={labelClassName}>
@@ -127,7 +167,11 @@ export function ProfileFields({
           />
         </div>
         <DonationAvailabilityToggle
-          defaultOn={profile?.donation_availability ?? true}
+          defaultOn={
+            canToggleDonation && (profile?.donation_availability ?? false)
+          }
+          disabled={donationDisabled}
+          disabledReason={donationDisabledReason}
         />
       </div>
     </>

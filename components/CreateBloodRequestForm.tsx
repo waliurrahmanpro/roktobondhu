@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useActionState } from "react";
 import { createBloodRequest } from "@/app/actions/blood-requests";
+import { LocationCascadingSelect } from "@/components/LocationCascadingSelect";
 import {
   BLOOD_GROUPS,
   URGENCY_LEVELS,
@@ -16,25 +16,13 @@ function todayISO() {
 }
 
 export function CreateBloodRequestForm() {
-  const router = useRouter();
   const [state, formAction, pending] = useActionState(createBloodRequest, null);
-
-  useEffect(() => {
-    if (state?.success) {
-      router.refresh();
-    }
-  }, [state?.success, router]);
 
   return (
     <form action={formAction} className="space-y-4">
       {state?.error && (
         <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
           {state.error}
-        </p>
-      )}
-      {state?.success && (
-        <p className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">
-          {state.success}
         </p>
       )}
 
@@ -111,33 +99,25 @@ export function CreateBloodRequestForm() {
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label htmlFor="district" className={labelClassName}>
-            District
-          </label>
-          <input
-            id="district"
-            name="district"
-            type="text"
-            required
-            placeholder="e.g. Dhaka"
-            className={inputClassName}
-          />
+      <div>
+        <p className={labelClassName}>Location</p>
+        <div className="mt-2">
+          <LocationCascadingSelect idPrefix="br" />
         </div>
-        <div>
-          <label htmlFor="contact_number" className={labelClassName}>
-            Contact number
-          </label>
-          <input
-            id="contact_number"
-            name="contact_number"
-            type="tel"
-            required
-            placeholder="01XXXXXXXXX"
-            className={inputClassName}
-          />
-        </div>
+      </div>
+
+      <div>
+        <label htmlFor="contact_number" className={labelClassName}>
+          Contact number
+        </label>
+        <input
+          id="contact_number"
+          name="contact_number"
+          type="tel"
+          required
+          placeholder="01XXXXXXXXX"
+          className={inputClassName}
+        />
       </div>
 
       <div>

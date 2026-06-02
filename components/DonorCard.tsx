@@ -6,6 +6,7 @@ import { DropletIcon } from "@/components/DropletIcon";
 import { RequestBloodButton } from "@/components/RequestBloodButton";
 import { DonorStatsBlock } from "@/components/DonorStatsBlock";
 import { TrustStatusLabel } from "@/components/TrustStatusLabel";
+import { VerifiedDonorBadge } from "@/components/VerifiedDonorBadge";
 import { formatLocationLine } from "@/lib/bangladesh-locations";
 
 type DonorCardProps = {
@@ -68,12 +69,15 @@ export function DonorCard({ donor, isLoggedIn }: DonorCardProps) {
         </Link>
 
         <div className="min-w-0 flex-1">
-          <Link
-            href={`/donor/${donor.user_id}`}
-            className="font-semibold text-gray-900 hover:text-red-600"
-          >
-            {donor.full_name}
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href={`/donor/${donor.user_id}`}
+              className="font-semibold text-gray-900 hover:text-red-600"
+            >
+              {donor.full_name}
+            </Link>
+            <VerifiedDonorBadge verificationStatus={donor.verification_status} compact />
+          </div>
           <div className="mt-2">
             <DonorStatsBlock donor={donor} />
           </div>

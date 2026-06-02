@@ -157,3 +157,44 @@ export async function completeBloodRequestAction(
   revalidatePath("/");
   return { success: "Request marked as completed." };
 }
+
+export async function approveVerificationAction(
+  formData: FormData
+): Promise<ActionResult> {
+  const auth = await assertAdmin();
+  if (auth.error || !auth.supabase) return { error: auth.error ?? "Not authorized." };
+
+  const userId = String(formData.get("user_id") ?? "").trim();
+  if (!userId) return { error: "Invalid user." };
+
+  const { error } = await auth.supabase.rpc("review_identity_verification", {
+    p_user_id: userId,
+    p_action: "approve",
+  });
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin/verifications");
+  revalidatePath("/");
+  return { success: "Verification approved." };
+}
+
+export async function rejectVerificationAction(
+  formData: FormData
+): Promise<ActionResult> {
+  const auth = await assertAdmin();
+  if (auth.error || !auth.supabase) return { error: auth.error ?? "Not authorized." };
+
+  const userId = String(formData.get("user_id") ?? "").trim();
+  if (!userId) return { error: "Invalid user." };
+
+  const { error } = await auth.supabase.rpc("review_identity_verification", {
+    p_user_id: userId,
+    p_action: "reject",
+  });
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin/verifications");
+  return { success: "Verification rejected." };
+}

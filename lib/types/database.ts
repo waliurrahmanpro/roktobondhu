@@ -1,5 +1,11 @@
 export type UserRole = "user" | "admin" | "super_admin";
 
+export type VerificationStatus =
+  | "not_submitted"
+  | "pending"
+  | "approved"
+  | "rejected";
+
 export type BloodGroup =
   | "A+"
   | "A-"
@@ -20,8 +26,12 @@ export type Profile = {
   upazila: string;
   full_address: string | null;
   phone: string;
+  date_of_birth: string | null;
   last_donation_date: string | null;
   donation_availability: boolean;
+  nid_front_url: string | null;
+  nid_back_url: string | null;
+  verification_status: VerificationStatus;
   profile_picture_url: string | null;
   total_points: number;
   total_donations: number;
@@ -44,9 +54,17 @@ export type ProfileInsert = Omit<
   | "is_banned"
   | "role"
   | "full_address"
+  | "date_of_birth"
+  | "nid_front_url"
+  | "nid_back_url"
+  | "verification_status"
 > & {
   profile_picture_url?: string | null;
   full_address?: string | null;
+  date_of_birth?: string | null;
+  nid_front_url?: string | null;
+  nid_back_url?: string | null;
+  verification_status?: VerificationStatus;
   total_points?: number;
   total_donations?: number;
   reported_donations?: number;
@@ -68,7 +86,9 @@ export type BloodRequest = {
   patient_name: string;
   blood_group: BloodGroup;
   hospital_name: string;
+  division: string | null;
   district: string;
+  upazila: string | null;
   contact_number: string;
   urgency_level: UrgencyLevel;
   request_date: string;
@@ -82,6 +102,18 @@ export type BloodRequestInsert = Omit<
   "id" | "created_at" | "updated_at" | "status"
 > & {
   status?: BloodRequestStatus;
+  division?: string | null;
+  upazila?: string | null;
+};
+
+export type MatchLog = {
+  id: string;
+  request_id: string;
+  donor_id: string;
+  match_score: number;
+  accepted_at: string | null;
+  donation_completed_at: string | null;
+  created_at: string;
 };
 
 export type DonorRequestStatus =
@@ -161,6 +193,7 @@ export type Notification = {
   id: string;
   user_id: string;
   donor_request_id: string | null;
+  blood_request_id: string | null;
   title: string;
   message: string;
   read_at: string | null;
@@ -188,6 +221,7 @@ export type PublicDonorProfile = Pick<
   | "total_donations"
   | "reported_donations"
   | "donation_availability"
+  | "verification_status"
   | "last_donation_date"
   | "created_at"
   | "updated_at"
@@ -255,6 +289,12 @@ export type Database = {
         Update: Partial<AuditLog>;
         Relationships: [];
       };
+      match_logs: {
+        Row: MatchLog;
+        Insert: Omit<MatchLog, "id" | "created_at" | "accepted_at" | "donation_completed_at">;
+        Update: Partial<MatchLog>;
+        Relationships: [];
+      };
     };
     Functions: {
       complete_donation: {
@@ -300,6 +340,14 @@ export type Database = {
           p_target_id?: string | null;
           p_details?: Record<string, unknown>;
         };
+        Returns: undefined;
+      };
+      process_blood_request_matching: {
+        Args: { p_request_id: string };
+        Returns: number;
+      };
+      review_identity_verification: {
+        Args: { p_user_id: string; p_action: "approve" | "reject" };
         Returns: undefined;
       };
     };

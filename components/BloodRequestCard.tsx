@@ -1,19 +1,23 @@
+import Link from "next/link";
 import { formatDate } from "@/lib/format";
+import { formatLocationLine } from "@/lib/bangladesh-locations";
 import { urgencyLabel, urgencyStyles } from "@/lib/blood-requests";
 import type { BloodRequest } from "@/lib/types/database";
 
 type BloodRequestCardProps = {
   request: BloodRequest;
   showContact?: boolean;
+  linkable?: boolean;
 };
 
 export function BloodRequestCard({
   request,
   showContact = true,
+  linkable = true,
 }: BloodRequestCardProps) {
   const styles = urgencyStyles(request.urgency_level);
 
-  return (
+  const card = (
     <article
       className={`rounded-2xl border bg-white p-6 shadow-sm transition hover:shadow-md ${styles.border}`}
     >
@@ -37,8 +41,13 @@ export function BloodRequestCard({
 
       <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
         <div>
-          <dt className="text-gray-500">District</dt>
-          <dd className="font-medium text-gray-900">{request.district}</dd>
+          <dt className="text-gray-500">Location</dt>
+          <dd className="font-medium text-gray-900">
+            {formatLocationLine({
+              upazila: request.upazila ?? undefined,
+              district: request.district,
+            })}
+          </dd>
         </div>
         <div>
           <dt className="text-gray-500">Request date</dt>
@@ -61,5 +70,15 @@ export function BloodRequestCard({
         )}
       </dl>
     </article>
+  );
+
+  if (!linkable) {
+    return card;
+  }
+
+  return (
+    <Link href={`/requests/${request.id}`} className="block">
+      {card}
+    </Link>
   );
 }

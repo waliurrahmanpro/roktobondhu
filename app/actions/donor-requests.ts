@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { assertUserNotBanned } from "@/lib/banned";
+import { canAppearInDonorSearch } from "@/lib/eligibility";
 import type { DonorRequestStatus } from "@/lib/types/database";
 
 export type ActionResult = {
@@ -39,7 +40,9 @@ export async function createDonorRequest(
 
   const { data: donorProfile } = await supabase
     .from("profiles")
-    .select("user_id, donation_availability, full_name, is_banned")
+    .select(
+      "user_id, donation_availability, full_name, is_banned, verification_status, date_of_birth"
+    )
     .eq("user_id", donorId)
     .single();
 
@@ -54,7 +57,7 @@ export async function createDonorRequest(
     return { error: "This donor is not available." };
   }
 
-  if (!donorProfile.donation_availability) {
+  if (!canAppearInDonorSearch(donorProfile)) {
     return { error: "This donor is not available right now." };
   }
 

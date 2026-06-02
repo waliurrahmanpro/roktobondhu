@@ -93,6 +93,27 @@ Regular admins:
 update public.profiles set role = 'admin' where user_id = 'another-uuid';
 ```
 
+## 2i. Identity verification & eligibility (Phase 7A)
+
+Run **`013_identity_verification.sql`** for:
+
+- `profiles.date_of_birth`, `nid_front_url`, `nid_back_url`, `verification_status`
+- `nid-documents` storage bucket (private; admins can review)
+- Age rules (17+ to donate / appear in search), eligibility trigger on profiles
+- `review_identity_verification()` admin RPC + approve/reject notifications
+- Updated `complete_donation()` and `process_blood_request_matching()` for verified eligible donors
+
+**Password reset:** add `http://localhost:3000/auth/callback` and production callback URLs in Supabase Auth → URL Configuration.
+
+## 2h. Smart matching & auto alerts (Phase 7)
+
+Run **`012_smart_matching.sql`** for:
+
+- `match_logs` — scored donor matches per blood request
+- `blood_requests.division` / `upazila` and `notifications.blood_request_id`
+- `process_blood_request_matching()` — scores donors, logs top matches, notifies top 10
+- Trigger to update `accepted_at` / `donation_completed_at` on `match_logs` when related `donor_requests` complete
+
 ## 2g. Reported donations & trust (Phase 4)
 
 Run **`008_reported_donations.sql`** for:
