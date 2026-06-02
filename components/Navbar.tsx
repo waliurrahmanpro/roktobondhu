@@ -11,7 +11,9 @@ const mainLinks = [
   { href: "/login", label: "Login", guestOnly: true },
   { href: "/register", label: "Register", guestOnly: true },
   { href: "/dashboard", label: "Dashboard", authOnly: true },
-  { href: "/dashboard/requests", label: "Blood Requests", authOnly: true },
+  { href: "/dashboard/incoming", label: "Incoming", authOnly: true },
+  { href: "/dashboard/my-requests", label: "My Requests", authOnly: true },
+  { href: "/dashboard/notifications", label: "Notifications", authOnly: true },
 ];
 
 type NavbarProps = {

@@ -15,12 +15,14 @@ type AvailableDonorsSectionProps = {
   initialDonors: Profile[];
   initialHasMore: boolean;
   initialTotalCount: number;
+  isLoggedIn: boolean;
 };
 
 export function AvailableDonorsSection({
   initialDonors,
   initialHasMore,
   initialTotalCount,
+  isLoggedIn,
 }: AvailableDonorsSectionProps) {
   const initialSnapshot = useRef({
     donors: initialDonors,
@@ -190,7 +192,11 @@ export function AvailableDonorsSection({
             </p>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {donors.map((donor) => (
-                <DonorCard key={donor.id} donor={donor} />
+                <DonorCard
+                  key={donor.id}
+                  donor={donor}
+                  isLoggedIn={isLoggedIn}
+                />
               ))}
             </div>
 

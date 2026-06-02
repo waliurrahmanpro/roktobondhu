@@ -58,6 +58,36 @@ export type BloodRequestInsert = Omit<
   "id" | "created_at" | "updated_at"
 >;
 
+export type DonorRequestStatus = "pending" | "accepted" | "rejected";
+
+export type DonorRequest = {
+  id: string;
+  donor_id: string;
+  receiver_id: string;
+  status: DonorRequestStatus;
+  created_at: string;
+};
+
+export type Notification = {
+  id: string;
+  user_id: string;
+  donor_request_id: string | null;
+  title: string;
+  message: string;
+  read_at: string | null;
+  created_at: string;
+};
+
+export type ProfileSummary = Pick<
+  Profile,
+  "user_id" | "full_name" | "blood_group" | "district" | "upazila" | "phone"
+>;
+
+export type DonorRequestWithProfiles = DonorRequest & {
+  donor_profile: ProfileSummary | null;
+  receiver_profile: ProfileSummary | null;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -71,6 +101,18 @@ export type Database = {
         Row: BloodRequest;
         Insert: BloodRequestInsert;
         Update: Partial<Omit<BloodRequest, "id" | "user_id" | "created_at">>;
+        Relationships: [];
+      };
+      donor_requests: {
+        Row: DonorRequest;
+        Insert: Omit<DonorRequest, "id" | "created_at">;
+        Update: Partial<Pick<DonorRequest, "status">>;
+        Relationships: [];
+      };
+      notifications: {
+        Row: Notification;
+        Insert: Omit<Notification, "id" | "created_at" | "read_at">;
+        Update: Partial<Pick<Notification, "read_at">>;
         Relationships: [];
       };
     };

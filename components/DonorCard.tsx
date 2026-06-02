@@ -1,11 +1,12 @@
 import Image from "next/image";
-import Link from "next/link";
 import { telLink, whatsAppLink } from "@/lib/phone";
 import type { Profile } from "@/lib/types/database";
 import { DropletIcon } from "@/components/DropletIcon";
+import { RequestBloodButton } from "@/components/RequestBloodButton";
 
 type DonorCardProps = {
   donor: Profile;
+  isLoggedIn: boolean;
 };
 
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -35,9 +36,8 @@ function PhoneIcon({ className }: { className?: string }) {
   );
 }
 
-export function DonorCard({ donor }: DonorCardProps) {
+export function DonorCard({ donor, isLoggedIn }: DonorCardProps) {
   const whatsappMessage = `Hello ${donor.full_name}, I found you on RoktoBondhu and need ${donor.blood_group} blood.`;
-  const requestHref = `/dashboard/requests?blood_group=${encodeURIComponent(donor.blood_group)}`;
 
   return (
     <article className="flex flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition hover:border-red-200 hover:shadow-lg hover:shadow-red-50">
@@ -82,30 +82,29 @@ export function DonorCard({ donor }: DonorCardProps) {
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-3 gap-2">
-        <a
-          href={whatsAppLink(donor.phone, whatsappMessage)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex flex-col items-center justify-center gap-1 rounded-xl bg-[#25D366] px-2 py-2.5 text-xs font-semibold text-white transition hover:bg-[#1da851] sm:text-sm"
-        >
-          <WhatsAppIcon className="h-4 w-4" />
-          WhatsApp
-        </a>
-        <a
-          href={telLink(donor.phone)}
-          className="inline-flex flex-col items-center justify-center gap-1 rounded-xl bg-red-600 px-2 py-2.5 text-xs font-semibold text-white transition hover:bg-red-700 sm:text-sm"
-        >
-          <PhoneIcon className="h-4 w-4" />
-          Call
-        </a>
-        <Link
-          href={requestHref}
-          className="inline-flex flex-col items-center justify-center gap-1 rounded-xl border border-red-200 bg-red-50 px-2 py-2.5 text-xs font-semibold text-red-600 transition hover:bg-red-100 sm:text-sm"
-        >
-          <DropletIcon className="h-4 w-4" />
-          Request Blood
-        </Link>
+      <div className="mt-5 space-y-2">
+        <div className="grid grid-cols-3 gap-2">
+          <a
+            href={whatsAppLink(donor.phone, whatsappMessage)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex flex-col items-center justify-center gap-1 rounded-xl bg-[#25D366] px-2 py-2.5 text-xs font-semibold text-white transition hover:bg-[#1da851] sm:text-sm"
+          >
+            <WhatsAppIcon className="h-4 w-4" />
+            WhatsApp
+          </a>
+          <a
+            href={telLink(donor.phone)}
+            className="inline-flex flex-col items-center justify-center gap-1 rounded-xl bg-red-600 px-2 py-2.5 text-xs font-semibold text-white transition hover:bg-red-700 sm:text-sm"
+          >
+            <PhoneIcon className="h-4 w-4" />
+            Call
+          </a>
+          <RequestBloodButton
+            donorUserId={donor.user_id}
+            isLoggedIn={isLoggedIn}
+          />
+        </div>
       </div>
     </article>
   );

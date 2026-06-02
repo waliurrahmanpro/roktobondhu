@@ -29,7 +29,14 @@ export async function login(
   }
 
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+
+  const redirectTo = String(formData.get("redirect") ?? "").trim();
+  const safeRedirect =
+    redirectTo.startsWith("/") && !redirectTo.startsWith("//")
+      ? redirectTo
+      : "/dashboard";
+
+  redirect(safeRedirect);
 }
 
 export async function register(

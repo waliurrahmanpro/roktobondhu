@@ -11,7 +11,7 @@ type BloodRequestFeedProps = {
 export function BloodRequestFeed({
   requests,
   title = "Live blood requests",
-  emptyMessage = "No blood requests yet. Be the first to post one.",
+  emptyMessage = "No public blood needs posted yet.",
 }: BloodRequestFeedProps) {
   return (
     <section id="requests" className="py-20 sm:py-24">
@@ -19,21 +19,21 @@ export function BloodRequestFeed({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <span className="text-sm font-semibold uppercase tracking-wider text-red-600">
-              Request feed
+              Public feed
             </span>
             <h2 className="mt-2 text-3xl font-bold text-gray-900 sm:text-4xl">
               {title}
             </h2>
             <p className="mt-2 max-w-2xl text-gray-600">
-              Real-time blood requests from patients and families across
-              Bangladesh.
+              Patient and family blood needs posted publicly. This is separate
+              from requesting a specific donor on the list above.
             </p>
           </div>
           <Link
             href="/dashboard/requests"
             className="inline-flex shrink-0 items-center justify-center rounded-full bg-red-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-red-200 transition hover:bg-red-700"
           >
-            Create blood request
+            Post public blood need
           </Link>
         </div>
 
@@ -44,7 +44,7 @@ export function BloodRequestFeed({
               href="/login?redirect=/dashboard/requests"
               className="mt-4 inline-block text-sm font-semibold text-red-600 hover:underline"
             >
-              Log in to create a request →
+              Log in to post a public need →
             </Link>
           </div>
         ) : (

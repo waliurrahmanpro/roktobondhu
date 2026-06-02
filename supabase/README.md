@@ -36,6 +36,16 @@ Run **`003_blood_requests.sql`** in **SQL Editor** to create the `blood_requests
 
 Run **`004_total_points.sql`** to add `total_points` on `profiles` (defaults to `0`; no points logic yet).
 
+## 2e. Donor requests & notifications (Phase 2)
+
+Run **`005_donor_requests_notifications.sql`** for:
+
+- `donor_requests` — receiver → donor blood requests (`pending` / `accepted` / `rejected`)
+- `notifications` — in-app alerts (created by database triggers)
+- RLS policies and security-definer triggers
+
+Then run **`006_notification_titles.sql`** to align notification titles (New request received / Request accepted / Request rejected).
+
 ## 3. Auth settings (recommended for local dev)
 
 Dashboard → **Authentication** → **Providers** → Email:

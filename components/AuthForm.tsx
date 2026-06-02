@@ -15,6 +15,7 @@ type AuthFormProps = {
   ) => Promise<AuthActionState>;
   children?: React.ReactNode;
   footer?: React.ReactNode;
+  redirectTo?: string;
 };
 
 export function AuthForm({
@@ -24,6 +25,7 @@ export function AuthForm({
   action,
   children,
   footer,
+  redirectTo,
 }: AuthFormProps) {
   const [state, formAction, pending] = useActionState(action, null);
 
@@ -45,6 +47,9 @@ export function AuthForm({
         )}
 
         <form action={formAction} className="mt-6 space-y-4">
+          {redirectTo ? (
+            <input type="hidden" name="redirect" value={redirectTo} />
+          ) : null}
           {children}
 
           <div>

@@ -3,7 +3,13 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DashboardForm } from "@/app/dashboard/DashboardForm";
 import { ProfileDisplay } from "@/components/ProfileDisplay";
+import { DashboardNav } from "@/components/DashboardNav";
 import { logout } from "@/app/actions/auth";
+import {
+  fetchIncomingDonorRequests,
+  fetchReceiverDonorRequests,
+  fetchUnreadNotificationCount,
+} from "@/lib/data/donor-requests";
 
 export const metadata = {
   title: "Dashboard — RoktoBondhu",
@@ -47,15 +53,22 @@ export default async function DashboardPage() {
     );
   }
 
+  const [incoming, myRequests, unreadCount] = await Promise.all([
+    fetchIncomingDonorRequests(user.id),
+    fetchReceiverDonorRequests(user.id),
+    fetchUnreadNotificationCount(user.id),
+  ]);
+
+  const pendingIncoming = incoming.filter((r) => r.status === "pending").length;
+  const pendingOutgoing = myRequests.filter((r) => r.status === "pending").length;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-red-50 to-white pt-28 pb-16">
       <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-            <p className="mt-1 text-gray-600">
-              Your saved donor profile is shown below.
-            </p>
+            <p className="mt-1 text-gray-600">Manage your donor profile and requests.</p>
           </div>
           <form action={logout}>
             <button
@@ -67,20 +80,38 @@ export default async function DashboardPage() {
           </form>
         </div>
 
-        <ProfileDisplay profile={profile} email={user.email} />
+        <DashboardNav currentPath="/dashboard" unreadCount={unreadCount} />
 
-        <Link
-          href="/dashboard/requests"
-          className="mt-6 flex items-center justify-between rounded-2xl border border-red-100 bg-white p-6 shadow-sm transition hover:border-red-200 hover:shadow-md"
-        >
-          <div>
-            <h2 className="font-semibold text-gray-900">Blood requests</h2>
-            <p className="mt-1 text-sm text-gray-500">
-              Create and manage patient blood requests
+        <div className="mb-8 grid gap-4 sm:grid-cols-3">
+          <Link
+            href="/dashboard/incoming"
+            className="rounded-xl border border-red-100 bg-white p-4 shadow-sm transition hover:border-red-200"
+          >
+            <p className="text-2xl font-bold text-red-600">{pendingIncoming}</p>
+            <p className="mt-1 text-sm font-medium text-gray-900">
+              Incoming (donor)
             </p>
-          </div>
-          <span className="text-red-600">→</span>
-        </Link>
+            <p className="text-xs text-gray-500">Accept or reject</p>
+          </Link>
+          <Link
+            href="/dashboard/my-requests"
+            className="rounded-xl border border-red-100 bg-white p-4 shadow-sm transition hover:border-red-200"
+          >
+            <p className="text-2xl font-bold text-red-600">{pendingOutgoing}</p>
+            <p className="mt-1 text-sm font-medium text-gray-900">My requests</p>
+            <p className="text-xs text-gray-500">Status as requester</p>
+          </Link>
+          <Link
+            href="/dashboard/notifications"
+            className="rounded-xl border border-red-100 bg-white p-4 shadow-sm transition hover:border-red-200"
+          >
+            <p className="text-2xl font-bold text-red-600">{unreadCount}</p>
+            <p className="mt-1 text-sm font-medium text-gray-900">Notifications</p>
+            <p className="text-xs text-gray-500">Unread</p>
+          </Link>
+        </div>
+
+        <ProfileDisplay profile={profile} email={user.email} />
 
         <div className="mt-8 rounded-2xl border border-gray-100 bg-white p-8 shadow-lg shadow-gray-100">
           <h2 className="text-lg font-semibold text-gray-900">Edit profile</h2>

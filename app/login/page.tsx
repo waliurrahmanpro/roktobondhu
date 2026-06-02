@@ -10,14 +10,21 @@ export const metadata = {
   title: "Login — RoktoBondhu",
 };
 
-export default function LoginPage() {
+type LoginPageProps = {
+  searchParams: Promise<{ redirect?: string }>;
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const { redirect: redirectTo } = await searchParams;
+
   return (
     <AuthPageShell>
       <AuthForm
         title="Welcome back"
-        subtitle="Sign in to manage your donor profile and availability."
+        subtitle="Sign in to request blood from donors or manage your profile."
         submitLabel="Log in"
         action={login}
+        redirectTo={redirectTo}
         footer={
           <AuthFooterLink
             text="Don't have an account?"

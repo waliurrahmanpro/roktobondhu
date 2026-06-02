@@ -4,6 +4,7 @@ import { BloodRequestFeed } from "@/components/BloodRequestFeed";
 import { AvailableDonorsSection } from "@/components/AvailableDonorsSection";
 import { fetchPublicBloodRequests } from "@/lib/data/fetch-blood-requests";
 import { fetchAvailableDonorsPage } from "@/lib/data/donors";
+import { createClient } from "@/lib/supabase/server";
 
 const stats = [
   { value: "12,500+", label: "Registered Donors" },
@@ -13,6 +14,11 @@ const stats = [
 ];
 
 export default async function Home() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const [bloodRequests, availableDonors] = await Promise.all([
     fetchPublicBloodRequests(),
     fetchAvailableDonorsPage(),
@@ -144,8 +150,13 @@ export default async function Home() {
                 Active donors ready to help
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-gray-600">
-                All donors below are available now. Use search to filter by
-                blood group, district, or upazila.
+                All donors below are available now. Click{" "}
+                <strong className="font-medium text-gray-800">
+                  Request Blood
+                </strong>{" "}
+                on a card to send a private request to that donor (not a public
+                post). Use search to filter by blood group, district, or
+                upazila.
               </p>
             </div>
 
@@ -153,6 +164,7 @@ export default async function Home() {
               initialDonors={availableDonors.donors}
               initialHasMore={availableDonors.hasMore}
               initialTotalCount={availableDonors.totalCount}
+              isLoggedIn={Boolean(user)}
             />
           </div>
         </section>
