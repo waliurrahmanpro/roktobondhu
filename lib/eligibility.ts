@@ -1,4 +1,5 @@
 import { isInDonationCooldown } from "@/lib/donor-status";
+import { isHiddenFromPublicDonorFeatures } from "@/lib/moderation";
 import type { Profile, VerificationStatus } from "@/lib/types/database";
 
 export const MIN_DONOR_AGE = 17;
@@ -60,13 +61,17 @@ export function canAppearInDonorSearch(
     Profile,
     | "donation_availability"
     | "is_banned"
+    | "is_blacklisted"
+    | "is_shadow_banned"
     | "verification_status"
     | "date_of_birth"
     | "full_name"
     | "next_eligible_date"
   >
 ): boolean {
-  if (profile.is_banned || !profile.donation_availability) return false;
+  if (isHiddenFromPublicDonorFeatures(profile) || !profile.donation_availability) {
+    return false;
+  }
   if (profile.full_name === "New Donor") return false;
   if (profile.verification_status !== "approved") return false;
   if (!isDonationAgeEligible(profile.date_of_birth)) return false;

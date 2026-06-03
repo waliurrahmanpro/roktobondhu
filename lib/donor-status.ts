@@ -9,6 +9,8 @@ export type DonorStatusKind =
   | "cooling_down"
   | "not_verified"
   | "under_17"
+  | "blacklisted"
+  | "shadow_banned"
   | "banned";
 
 export type DonorStatus = {
@@ -26,21 +28,41 @@ export function isInDonationCooldown(
   return nextEligibleDate > today;
 }
 
-export function getDonorStatus(
-  profile: Pick<
-    Profile,
-    | "is_banned"
-    | "date_of_birth"
-    | "verification_status"
-    | "next_eligible_date"
-    | "donation_availability"
-  >
-): DonorStatus {
+export type DonorStatusProfile = Pick<
+  Profile,
+  | "date_of_birth"
+  | "verification_status"
+  | "next_eligible_date"
+  | "donation_availability"
+> & {
+  is_banned?: boolean;
+  is_blacklisted?: boolean;
+  is_shadow_banned?: boolean;
+};
+
+export function getDonorStatus(profile: DonorStatusProfile): DonorStatus {
+  if (profile.is_blacklisted) {
+    return {
+      kind: "blacklisted",
+      label: "Blacklisted",
+      description: "Cannot log in or participate on the platform.",
+    };
+  }
+
   if (profile.is_banned) {
     return {
       kind: "banned",
       label: "Banned",
       description: "This account is suspended.",
+    };
+  }
+
+  if (profile.is_shadow_banned) {
+    return {
+      kind: "shadow_banned",
+      label: "Shadow banned",
+      description:
+        "Can use the dashboard but is hidden from search, leaderboard, and matching.",
     };
   }
 
@@ -113,5 +135,13 @@ export const DONOR_STATUS_STYLES: Record<
   banned: {
     badge: "bg-red-100 text-red-800 ring-red-200",
     dot: "bg-red-500",
+  },
+  blacklisted: {
+    badge: "bg-gray-900 text-white ring-gray-700",
+    dot: "bg-gray-900",
+  },
+  shadow_banned: {
+    badge: "bg-purple-100 text-purple-900 ring-purple-200",
+    dot: "bg-purple-500",
   },
 };

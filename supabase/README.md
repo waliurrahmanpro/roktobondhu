@@ -103,6 +103,20 @@ Run **`017_super_admin_user_control.sql`** for:
 
 Manage users at **`/super-admin/users/[user-id]`** (super_admin role only).
 
+Full profile editing (personal info, location, verification, donation settings, points/donations) uses the same page form and writes audit logs: Profile Edited, Phone Changed, Blood Group Changed, Points Adjusted, Donations Adjusted, Verification Changed (each with old/new values and super admin ID in `details`).
+
+## 2n. Blacklist, shadow ban, and user notes
+
+Run **`018_blacklist_shadow_ban_notes.sql`** for:
+
+- `profiles.is_blacklisted` — blocks login, blood requests, donor search, matching, and earning points
+- `profiles.is_shadow_banned` — can log in; hidden from search, leaderboard, matching, and incoming donor requests
+- `user_notes` — private staff notes (admins and super admins only)
+- RPCs: `super_admin_set_user_blacklisted`, `super_admin_set_user_shadow_banned`, `admin_create_user_note`, `admin_update_user_note`, `admin_delete_user_note`
+- Updated `is_eligible_donor_profile`, `complete_donation`, and `adjust_user_points` for blacklist rules
+
+Audit logs: User Blacklisted, User Removed From Blacklist, User Shadow Banned, User Shadow Ban Removed, Note Added, Note Updated, Note Deleted.
+
 ## 2l. Unique phone per account
 
 Run **`016_unique_phone.sql`** for:

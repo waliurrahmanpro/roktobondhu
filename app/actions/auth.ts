@@ -14,6 +14,7 @@ import {
   assertPhoneAvailable,
   mapProfileSaveError,
 } from "@/lib/phone-unique";
+import { isLoginBlocked } from "@/lib/moderation";
 import type { BloodGroup } from "@/lib/types/database";
 
 export type AuthActionState = {
@@ -46,11 +47,11 @@ export async function login(
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("is_banned")
+      .select("is_banned, is_blacklisted")
       .eq("user_id", user.id)
       .maybeSingle();
 
-    if (profile?.is_banned) {
+    if (isLoginBlocked(profile ?? undefined)) {
       await supabase.auth.signOut();
       return {
         error:

@@ -107,10 +107,12 @@ export async function computeTopMatchesForRequest(
   const { data: donors, error } = await supabase
     .from("profiles")
     .select(
-      "user_id, full_name, blood_group, district, upazila, phone, total_points, total_donations, reported_donations, donation_availability, is_banned, verification_status, date_of_birth, next_eligible_date"
+      "user_id, full_name, blood_group, district, upazila, phone, total_points, total_donations, reported_donations, donation_availability, is_banned, is_blacklisted, is_shadow_banned, verification_status, date_of_birth, next_eligible_date"
     )
     .eq("donation_availability", true)
     .eq("is_banned", false)
+    .eq("is_blacklisted", false)
+    .eq("is_shadow_banned", false)
     .eq("verification_status", "approved")
     .not("date_of_birth", "is", null)
     .lte("date_of_birth", maxDob)

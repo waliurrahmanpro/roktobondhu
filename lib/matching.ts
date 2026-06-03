@@ -1,5 +1,6 @@
 import { isDonationAgeEligible, isVerifiedDonor } from "@/lib/eligibility";
 import { isInDonationCooldown } from "@/lib/donor-status";
+import { isHiddenFromPublicDonorFeatures } from "@/lib/moderation";
 import { getTrustStatus } from "@/lib/trust";
 import type { BloodGroup, Profile, VerificationStatus } from "@/lib/types/database";
 
@@ -51,10 +52,15 @@ export type DonorForMatching = Pick<
   | "verification_status"
   | "date_of_birth"
   | "next_eligible_date"
->;
+> & {
+  is_blacklisted?: boolean;
+  is_shadow_banned?: boolean;
+};
 
 export function isMatchableDonor(donor: DonorForMatching): boolean {
-  if (donor.is_banned || !donor.donation_availability) return false;
+  if (isHiddenFromPublicDonorFeatures(donor) || !donor.donation_availability) {
+    return false;
+  }
   if (!isVerifiedDonor(donor.verification_status as VerificationStatus)) {
     return false;
   }

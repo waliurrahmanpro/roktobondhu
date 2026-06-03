@@ -106,6 +106,8 @@ export async function fetchAdminStats(): Promise<AdminStats> {
       .select("*", { count: "exact", head: true })
       .eq("donation_availability", true)
       .eq("is_banned", false)
+      .eq("is_blacklisted", false)
+      .eq("is_shadow_banned", false)
       .eq("verification_status", "approved")
       .not("date_of_birth", "is", null)
       .or(

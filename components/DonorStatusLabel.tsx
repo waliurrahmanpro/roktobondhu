@@ -3,17 +3,10 @@ import {
   getDonorStatus,
   type DonorStatusKind,
 } from "@/lib/donor-status";
-import type { Profile } from "@/lib/types/database";
+import type { DonorStatusProfile } from "@/lib/donor-status";
 
 type DonorStatusLabelProps = {
-  profile: Pick<
-    Profile,
-    | "is_banned"
-    | "date_of_birth"
-    | "verification_status"
-    | "next_eligible_date"
-    | "donation_availability"
-  >;
+  profile: DonorStatusProfile;
   size?: "sm" | "md";
   showDescription?: boolean;
 };

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { isHiddenFromPublicDonorFeatures } from "@/lib/moderation";
 import type { Profile, PublicDonorProfile } from "@/lib/types/database";
 
 export const LEADERBOARD_PAGE_SIZE = 20;
@@ -18,6 +19,8 @@ export async function fetchTopDonors(limit = 5): Promise<Profile[]> {
     .from("profiles")
     .select("*")
     .eq("is_banned", false)
+    .eq("is_blacklisted", false)
+    .eq("is_shadow_banned", false)
     .order("total_points", { ascending: false })
     .order("total_donations", { ascending: false })
     .limit(limit);
@@ -39,7 +42,10 @@ export async function fetchLeaderboardPage(
 
   const { count, error: countError } = await supabase
     .from("profiles")
-    .select("*", { count: "exact", head: true });
+    .select("*", { count: "exact", head: true })
+    .eq("is_banned", false)
+    .eq("is_blacklisted", false)
+    .eq("is_shadow_banned", false);
 
   if (countError) {
     console.error("Leaderboard count failed:", countError.message);
@@ -58,6 +64,9 @@ export async function fetchLeaderboardPage(
   const { data, error } = await supabase
     .from("profiles")
     .select("*")
+    .eq("is_banned", false)
+    .eq("is_blacklisted", false)
+    .eq("is_shadow_banned", false)
     .order("total_points", { ascending: false })
     .order("total_donations", { ascending: false })
     .range(offset, offset + LEADERBOARD_PAGE_SIZE - 1);
@@ -103,5 +112,9 @@ export async function fetchPublicDonorProfile(
     return null;
   }
 
-  return (data as PublicDonorProfile) ?? null;
+  if (!data || isHiddenFromPublicDonorFeatures(data as Profile)) {
+    return null;
+  }
+
+  return data as PublicDonorProfile;
 }

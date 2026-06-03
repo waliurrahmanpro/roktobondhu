@@ -12,6 +12,8 @@ export type SuperAdminUserListItem = Pick<
   | "role"
   | "verification_status"
   | "is_banned"
+  | "is_blacklisted"
+  | "is_shadow_banned"
   | "donation_availability"
 >;
 
@@ -42,7 +44,7 @@ export async function fetchSuperAdminUserList(): Promise<SuperAdminUserListItem[
   const { data, error } = await supabase
     .from("profiles")
     .select(
-      "user_id, full_name, blood_group, phone, role, verification_status, is_banned, donation_availability"
+      "user_id, full_name, blood_group, phone, role, verification_status, is_banned, is_blacklisted, is_shadow_banned, donation_availability"
     )
     .order("created_at", { ascending: false })
     .limit(500);

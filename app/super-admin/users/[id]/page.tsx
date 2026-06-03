@@ -6,10 +6,13 @@ import { ProfileDisplay } from "@/components/ProfileDisplay";
 import { DonorStatusLabel } from "@/components/DonorStatusLabel";
 import { SuperAdminNav } from "@/components/super-admin/SuperAdminNav";
 import { SuperAdminUserControls } from "@/components/super-admin/SuperAdminUserControls";
+import { SuperAdminUserEditorForm } from "@/components/super-admin/SuperAdminUserEditorForm";
+import { SuperAdminUserModerationPanel } from "@/components/super-admin/SuperAdminUserModerationPanel";
 import {
   fetchSuperAdminUserDetail,
   formatNidStatus,
 } from "@/lib/data/super-admin-users";
+import { fetchUserNotesForAdmin } from "@/lib/data/user-notes";
 import { formatDate } from "@/lib/format";
 import { formatLocationLine } from "@/lib/bangladesh-locations";
 
@@ -45,7 +48,10 @@ export default async function SuperAdminUserDetailPage({ params }: PageProps) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const profile = await fetchSuperAdminUserDetail(id);
+  const [profile, notes] = await Promise.all([
+    fetchSuperAdminUserDetail(id),
+    fetchUserNotesForAdmin(id),
+  ]);
   if (!profile) {
     notFound();
   }
@@ -61,30 +67,16 @@ export default async function SuperAdminUserDetailPage({ params }: PageProps) {
         ← All users
       </Link>
 
-      <div className="mt-6 grid gap-8 lg:grid-cols-2">
+      <div className="mt-6 grid gap-8 xl:grid-cols-2">
         <div className="space-y-6">
           <ProfileDisplay profile={profile} />
 
-          <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Platform stats
-            </h2>
-            <dl className="mt-4">
-              <DetailRow
-                label="Total points"
-                value={String(profile.total_points ?? 0)}
-              />
-              <DetailRow
-                label="Total donations"
-                value={String(profile.total_donations ?? 0)}
-              />
-              <DetailRow
-                label="Reported donations"
-                value={String(profile.reported_donations ?? 0)}
-              />
-              <DetailRow label="Role" value={profile.role ?? "user"} />
-            </dl>
-          </section>
+          {user && (
+            <SuperAdminUserEditorForm
+              profile={profile}
+              currentUserId={user.id}
+            />
+          )}
         </div>
 
         <div className="space-y-6">
@@ -119,6 +111,14 @@ export default async function SuperAdminUserDetailPage({ params }: PageProps) {
               <DetailRow
                 label="Banned"
                 value={profile.is_banned ? "Yes" : "No"}
+              />
+              <DetailRow
+                label="Blacklisted"
+                value={profile.is_blacklisted ? "Yes" : "No"}
+              />
+              <DetailRow
+                label="Shadow banned"
+                value={profile.is_shadow_banned ? "Yes" : "No"}
               />
             </dl>
           </section>
@@ -170,10 +170,17 @@ export default async function SuperAdminUserDetailPage({ params }: PageProps) {
           </section>
 
           {user && (
-            <SuperAdminUserControls
-              profile={profile}
-              currentUserId={user.id}
-            />
+            <>
+              <SuperAdminUserModerationPanel
+                profile={profile}
+                currentUserId={user.id}
+                notes={notes}
+              />
+              <SuperAdminUserControls
+                profile={profile}
+                currentUserId={user.id}
+              />
+            </>
           )}
 
           <p className="text-xs text-gray-500">

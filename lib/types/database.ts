@@ -38,6 +38,8 @@ export type Profile = {
   total_donations: number;
   reported_donations: number;
   is_banned: boolean;
+  is_blacklisted: boolean;
+  is_shadow_banned: boolean;
   role: UserRole;
   created_at: string;
   updated_at: string;
@@ -53,6 +55,8 @@ export type ProfileInsert = Omit<
   | "total_donations"
   | "reported_donations"
   | "is_banned"
+  | "is_blacklisted"
+  | "is_shadow_banned"
   | "role"
   | "full_address"
   | "date_of_birth"
@@ -72,7 +76,18 @@ export type ProfileInsert = Omit<
   total_donations?: number;
   reported_donations?: number;
   is_banned?: boolean;
+  is_blacklisted?: boolean;
+  is_shadow_banned?: boolean;
   role?: UserRole;
+};
+
+export type UserNote = {
+  id: string;
+  subject_user_id: string;
+  author_id: string | null;
+  body: string;
+  created_at: string;
+  updated_at: string;
 };
 
 export type ProfileUpdate = Partial<
@@ -301,6 +316,12 @@ export type Database = {
         Update: Partial<MatchLog>;
         Relationships: [];
       };
+      user_notes: {
+        Row: UserNote;
+        Insert: Omit<UserNote, "id" | "created_at" | "updated_at">;
+        Update: Partial<Pick<UserNote, "body">>;
+        Relationships: [];
+      };
     };
     Functions: {
       complete_donation: {
@@ -368,6 +389,14 @@ export type Database = {
         Args: { p_phone: string; p_exclude_user_id?: string | null };
         Returns: boolean;
       };
+      super_admin_log_user_action: {
+        Args: {
+          p_action: string;
+          p_user_id: string;
+          p_details?: Record<string, unknown>;
+        };
+        Returns: undefined;
+      };
       super_admin_set_user_verification: {
         Args: { p_user_id: string; p_verified: boolean };
         Returns: undefined;
@@ -386,6 +415,26 @@ export type Database = {
       };
       super_admin_add_cooldown: {
         Args: { p_user_id: string; p_days?: number };
+        Returns: undefined;
+      };
+      super_admin_set_user_blacklisted: {
+        Args: { p_user_id: string; p_blacklisted: boolean };
+        Returns: undefined;
+      };
+      super_admin_set_user_shadow_banned: {
+        Args: { p_user_id: string; p_shadow_banned: boolean };
+        Returns: undefined;
+      };
+      admin_create_user_note: {
+        Args: { p_subject_user_id: string; p_body: string };
+        Returns: string;
+      };
+      admin_update_user_note: {
+        Args: { p_note_id: string; p_body: string };
+        Returns: undefined;
+      };
+      admin_delete_user_note: {
+        Args: { p_note_id: string };
         Returns: undefined;
       };
     };

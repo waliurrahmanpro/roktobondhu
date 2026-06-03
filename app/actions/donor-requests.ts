@@ -41,7 +41,7 @@ export async function createDonorRequest(
   const { data: donorProfile } = await supabase
     .from("profiles")
     .select(
-      "user_id, donation_availability, full_name, is_banned, verification_status, date_of_birth, next_eligible_date"
+      "user_id, donation_availability, full_name, is_banned, is_blacklisted, is_shadow_banned, verification_status, date_of_birth, next_eligible_date"
     )
     .eq("user_id", donorId)
     .single();
@@ -53,7 +53,11 @@ export async function createDonorRequest(
     };
   }
 
-  if (donorProfile.is_banned) {
+  if (
+    donorProfile.is_banned ||
+    donorProfile.is_blacklisted ||
+    donorProfile.is_shadow_banned
+  ) {
     return { error: "This donor is not available." };
   }
 

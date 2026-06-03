@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/lib/types/database";
+import { isLoginBlocked } from "@/lib/moderation";
 import type { UserRole } from "@/lib/types/database";
 
 function hasAdminAccess(role: UserRole | null | undefined) {
@@ -53,13 +54,13 @@ export async function updateSession(request: NextRequest) {
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("is_banned, role")
+      .select("is_banned, is_blacklisted, role")
       .eq("user_id", user.id)
       .maybeSingle();
 
     userRole = (profile?.role as UserRole) ?? "user";
 
-    if (profile?.is_banned) {
+    if (isLoginBlocked(profile ?? undefined)) {
       await supabase.auth.signOut();
       const url = request.nextUrl.clone();
       url.pathname = "/";
