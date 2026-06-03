@@ -4,6 +4,7 @@ const links = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/reports", label: "Reports" },
   { href: "/admin/users", label: "Users" },
+  { href: "/admin/duplicate-accounts", label: "Duplicate Accounts" },
   { href: "/admin/verifications", label: "Verifications" },
   { href: "/admin/requests", label: "Blood requests" },
   { href: "/admin/analytics", label: "Analytics" },

@@ -12,6 +12,10 @@ import {
 } from "@/lib/storage";
 import { validateAndNormalizeLocation } from "@/lib/validate-location";
 import { enforceDonationAvailability } from "@/lib/eligibility";
+import {
+  assertPhoneAvailable,
+  mapProfileSaveError,
+} from "@/lib/phone-unique";
 import type { VerificationStatus } from "@/lib/types/database";
 
 async function removeUserAvatars(
@@ -98,6 +102,11 @@ export async function updateProfile(
     return { error: locationCheck.error ?? "Invalid location." };
   }
 
+  const phoneError = await assertPhoneAvailable(phone, user.id);
+  if (phoneError) {
+    return { error: phoneError };
+  }
+
   let profilePictureUrl: string | null = existingUrl || null;
 
   if (pictureFile instanceof File && pictureFile.size > 0) {
@@ -147,7 +156,7 @@ export async function updateProfile(
     .eq("user_id", user.id);
 
   if (error) {
-    return { error: error.message };
+    return { error: mapProfileSaveError(error.message) };
   }
 
   revalidatePath("/dashboard");

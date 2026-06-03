@@ -364,6 +364,10 @@ export type Database = {
         };
         Returns: undefined;
       };
+      is_phone_available: {
+        Args: { p_phone: string; p_exclude_user_id?: string | null };
+        Returns: boolean;
+      };
     };
     Views: Record<string, never>;
     Enums: Record<string, never>;

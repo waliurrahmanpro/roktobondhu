@@ -93,6 +93,16 @@ Regular admins:
 update public.profiles set role = 'admin' where user_id = 'another-uuid';
 ```
 
+## 2l. Unique phone per account
+
+Run **`016_unique_phone.sql`** for:
+
+- `normalize_profile_phone()` and unique index on normalized phone
+- `is_phone_available()` RPC for registration and profile edit
+- Signup trigger rejects duplicate phones
+
+**Note:** If duplicates already exist in production, the unique index creation may fail until you resolve them using **Admin → Duplicate Accounts**.
+
 ## 2k. Blood request owner control (audit)
 
 Run **`015_blood_request_audit.sql`** for:

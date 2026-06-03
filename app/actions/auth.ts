@@ -10,6 +10,10 @@ import {
   enforceDonationAvailability,
   isDonationAgeEligible,
 } from "@/lib/eligibility";
+import {
+  assertPhoneAvailable,
+  mapProfileSaveError,
+} from "@/lib/phone-unique";
 import type { BloodGroup } from "@/lib/types/database";
 
 export type AuthActionState = {
@@ -128,6 +132,11 @@ export async function register(
     return { error: "New registrations are currently closed." };
   }
 
+  const phoneError = await assertPhoneAvailable(phone);
+  if (phoneError) {
+    return { error: phoneError };
+  }
+
   const supabase = await createClient();
 
   const { data, error } = await supabase.auth.signUp({
@@ -174,7 +183,7 @@ export async function register(
     );
 
     if (profileError) {
-      return { error: profileError.message };
+      return { error: mapProfileSaveError(profileError.message) };
     }
 
     revalidatePath("/", "layout");

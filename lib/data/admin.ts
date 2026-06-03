@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { fetchProfilesByUserIds } from "@/lib/data/profiles";
 import { calculateAge } from "@/lib/eligibility";
 import { getNidSignedUrl } from "@/lib/nid-url";
+import { formatPhoneDisplay } from "@/lib/phone";
+import { phoneUniqueKey } from "@/lib/phone-unique";
 import type {
   BloodRequest,
   BloodRequestStatus,
@@ -355,6 +357,60 @@ export type PendingVerificationRow = Profile & {
   nidFrontSignedUrl: string | null;
   nidBackSignedUrl: string | null;
 };
+
+export type DuplicatePhoneUser = {
+  user_id: string;
+  full_name: string;
+  phone: string;
+};
+
+export type DuplicatePhoneGroup = {
+  phoneNormalized: string;
+  phoneDisplay: string;
+  users: DuplicatePhoneUser[];
+};
+
+/** Existing duplicate phones — report only, no automatic changes. */
+export async function fetchDuplicatePhoneAccounts(): Promise<
+  DuplicatePhoneGroup[]
+> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("user_id, full_name, phone")
+    .not("phone", "is", null)
+    .neq("phone", "");
+
+  if (error) {
+    console.error("Duplicate phone report failed:", error.message);
+    return [];
+  }
+
+  const groups = new Map<string, DuplicatePhoneUser[]>();
+
+  for (const row of data ?? []) {
+    const key = phoneUniqueKey(row.phone);
+    if (!key) continue;
+
+    const list = groups.get(key) ?? [];
+    list.push({
+      user_id: row.user_id,
+      full_name: row.full_name,
+      phone: row.phone,
+    });
+    groups.set(key, list);
+  }
+
+  return [...groups.entries()]
+    .filter(([, users]) => users.length > 1)
+    .map(([phoneNormalized, users]) => ({
+      phoneNormalized,
+      phoneDisplay: formatPhoneDisplay(users[0].phone),
+      users: users.sort((a, b) => a.full_name.localeCompare(b.full_name)),
+    }))
+    .sort((a, b) => b.users.length - a.users.length);
+}
 
 export async function fetchPendingVerifications(): Promise<
   PendingVerificationRow[]
