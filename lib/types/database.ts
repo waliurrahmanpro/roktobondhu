@@ -368,6 +368,26 @@ export type Database = {
         Args: { p_phone: string; p_exclude_user_id?: string | null };
         Returns: boolean;
       };
+      super_admin_set_user_verification: {
+        Args: { p_user_id: string; p_verified: boolean };
+        Returns: undefined;
+      };
+      super_admin_set_user_banned: {
+        Args: { p_user_id: string; p_banned: boolean };
+        Returns: undefined;
+      };
+      super_admin_set_donation_availability: {
+        Args: { p_user_id: string; p_enabled: boolean };
+        Returns: undefined;
+      };
+      super_admin_set_cooldown: {
+        Args: { p_user_id: string; p_next_eligible_date: string | null };
+        Returns: undefined;
+      };
+      super_admin_add_cooldown: {
+        Args: { p_user_id: string; p_days?: number };
+        Returns: undefined;
+      };
     };
     Views: Record<string, never>;
     Enums: Record<string, never>;

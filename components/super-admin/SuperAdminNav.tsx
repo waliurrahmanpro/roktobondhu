@@ -2,6 +2,7 @@ import Link from "next/link";
 
 const links = [
   { href: "/super-admin", label: "Dashboard" },
+  { href: "/super-admin/users", label: "Users" },
   { href: "/super-admin/admins", label: "Admins" },
   { href: "/super-admin/settings", label: "Settings" },
   { href: "/super-admin/announcements", label: "Announcements" },

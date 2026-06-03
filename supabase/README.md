@@ -93,6 +93,16 @@ Regular admins:
 update public.profiles set role = 'admin' where user_id = 'another-uuid';
 ```
 
+## 2m. Super admin user control
+
+Run **`017_super_admin_user_control.sql`** for:
+
+- Super-admin RPCs: verify/unverify, ban/unban, donation ON/OFF, cooldown add/remove/set date
+- Eligibility trigger bypass when super admins edit other users
+- Audit log entries: User Verified, User Unverified, User Banned, etc.
+
+Manage users at **`/super-admin/users/[user-id]`** (super_admin role only).
+
 ## 2l. Unique phone per account
 
 Run **`016_unique_phone.sql`** for:
