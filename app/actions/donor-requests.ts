@@ -41,7 +41,7 @@ export async function createDonorRequest(
   const { data: donorProfile } = await supabase
     .from("profiles")
     .select(
-      "user_id, donation_availability, full_name, is_banned, verification_status, date_of_birth"
+      "user_id, donation_availability, full_name, is_banned, verification_status, date_of_birth, next_eligible_date"
     )
     .eq("user_id", donorId)
     .single();

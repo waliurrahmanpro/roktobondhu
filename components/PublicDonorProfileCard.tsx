@@ -5,6 +5,7 @@ import { DropletIcon } from "@/components/DropletIcon";
 import { RequestBloodButton } from "@/components/RequestBloodButton";
 import { TrustStatusLabel } from "@/components/TrustStatusLabel";
 import { VerifiedDonorBadge } from "@/components/VerifiedDonorBadge";
+import { DonorStatusLabel } from "@/components/DonorStatusLabel";
 import { formatDate } from "@/lib/format";
 import type { PublicDonorProfile } from "@/lib/types/database";
 
@@ -44,6 +45,9 @@ export function PublicDonorProfileCard({
             <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
               <h1 className="text-3xl font-bold">{profile.full_name}</h1>
               <VerifiedDonorBadge verificationStatus={profile.verification_status} />
+            </div>
+            <div className="mt-3 flex justify-center sm:justify-start">
+              <DonorStatusLabel profile={profile} size="md" showDescription />
             </div>
             <div className="mt-4 flex flex-wrap justify-center gap-2 sm:justify-start">
               <span className="rounded-full bg-white px-3 py-1 text-sm font-bold text-red-600">

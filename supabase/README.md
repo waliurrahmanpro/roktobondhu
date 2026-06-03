@@ -93,6 +93,16 @@ Regular admins:
 update public.profiles set role = 'admin' where user_id = 'another-uuid';
 ```
 
+## 2j. Smart matching & donation cooldown (Phase 7B)
+
+Run **`014_matching_and_cooldown.sql`** for:
+
+- `profiles.next_eligible_date` — 90 days after each confirmed donation
+- Cooldown excludes donors from search, matching, and emergency notifications
+- Updated match scoring (verified +30, points tier bonus, etc.)
+- `complete_donation()` sets cooldown and turns availability off
+- Notification copy: `Urgent {blood group} blood request near your area.`
+
 ## 2i. Identity verification & eligibility (Phase 7A)
 
 Run **`013_identity_verification.sql`** for:

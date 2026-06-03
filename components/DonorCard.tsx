@@ -7,6 +7,7 @@ import { RequestBloodButton } from "@/components/RequestBloodButton";
 import { DonorStatsBlock } from "@/components/DonorStatsBlock";
 import { TrustStatusLabel } from "@/components/TrustStatusLabel";
 import { VerifiedDonorBadge } from "@/components/VerifiedDonorBadge";
+import { DonorStatusLabel } from "@/components/DonorStatusLabel";
 import { formatLocationLine } from "@/lib/bangladesh-locations";
 
 type DonorCardProps = {
@@ -77,6 +78,7 @@ export function DonorCard({ donor, isLoggedIn }: DonorCardProps) {
               {donor.full_name}
             </Link>
             <VerifiedDonorBadge verificationStatus={donor.verification_status} compact />
+            <DonorStatusLabel profile={donor} />
           </div>
           <div className="mt-2">
             <DonorStatsBlock donor={donor} />

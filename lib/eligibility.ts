@@ -1,3 +1,4 @@
+import { isInDonationCooldown } from "@/lib/donor-status";
 import type { Profile, VerificationStatus } from "@/lib/types/database";
 
 export const MIN_DONOR_AGE = 17;
@@ -38,10 +39,13 @@ export function maxDateOfBirthForDonorAge(asOf: Date = new Date()): string {
 
 export function canEnableDonationAvailability(
   dateOfBirth: string | null | undefined,
-  verificationStatus: VerificationStatus
+  verificationStatus: VerificationStatus,
+  nextEligibleDate?: string | null
 ): boolean {
   return (
-    isDonationAgeEligible(dateOfBirth) && verificationStatus === "approved"
+    isDonationAgeEligible(dateOfBirth) &&
+    verificationStatus === "approved" &&
+    !isInDonationCooldown(nextEligibleDate)
   );
 }
 
@@ -59,19 +63,27 @@ export function canAppearInDonorSearch(
     | "verification_status"
     | "date_of_birth"
     | "full_name"
+    | "next_eligible_date"
   >
 ): boolean {
   if (profile.is_banned || !profile.donation_availability) return false;
   if (profile.full_name === "New Donor") return false;
   if (profile.verification_status !== "approved") return false;
-  return isDonationAgeEligible(profile.date_of_birth);
+  if (!isDonationAgeEligible(profile.date_of_birth)) return false;
+  if (isInDonationCooldown(profile.next_eligible_date)) return false;
+  return true;
 }
 
 export function enforceDonationAvailability(
   dateOfBirth: string | null | undefined,
   verificationStatus: VerificationStatus,
-  requested: boolean
+  requested: boolean,
+  nextEligibleDate?: string | null
 ): boolean {
   if (!requested) return false;
-  return canEnableDonationAvailability(dateOfBirth, verificationStatus);
+  return canEnableDonationAvailability(
+    dateOfBirth,
+    verificationStatus,
+    nextEligibleDate
+  );
 }

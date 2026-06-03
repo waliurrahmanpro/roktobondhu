@@ -29,14 +29,21 @@ export function ProfileFields({
   const ageEligible = isDonationAgeEligible(dob);
   const canToggleDonation = canEnableDonationAvailability(
     dob,
-    profile?.verification_status ?? "not_submitted"
+    profile?.verification_status ?? "not_submitted",
+    profile?.next_eligible_date
   );
-  const donationDisabled = !ageEligible || profile?.verification_status !== "approved";
+  const inCooldown =
+    profile?.next_eligible_date &&
+    profile.next_eligible_date > new Date().toISOString().split("T")[0];
+  const donationDisabled =
+    !ageEligible || profile?.verification_status !== "approved" || !!inCooldown;
   const donationDisabledReason = !ageEligible
     ? DONATION_AGE_MESSAGE
-    : profile?.verification_status !== "approved"
-      ? "Complete NID verification before enabling donation availability."
-      : undefined;
+    : inCooldown
+      ? `Cooling down until ${profile?.next_eligible_date}. You cannot enable availability yet.`
+      : profile?.verification_status !== "approved"
+        ? "Complete NID verification before enabling donation availability."
+        : undefined;
 
   return (
     <>

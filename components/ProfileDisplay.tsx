@@ -3,6 +3,7 @@ import { DonorBadgeLabel } from "@/components/DonorBadgeLabel";
 import { DropletIcon } from "@/components/DropletIcon";
 import { TrustStatusLabel } from "@/components/TrustStatusLabel";
 import { VerifiedDonorBadge } from "@/components/VerifiedDonorBadge";
+import { DonorStatusLabel } from "@/components/DonorStatusLabel";
 import { calculateAge } from "@/lib/eligibility";
 import { POINTS_PER_DONATION } from "@/lib/constants";
 import { formatDate } from "@/lib/format";
@@ -114,6 +115,18 @@ export function ProfileDisplay({ profile, email }: ProfileDisplayProps) {
           label="Last donation date"
           value={formatDate(profile.last_donation_date)}
         />
+        <div className="border-b border-gray-100 py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+          <dt className="text-sm font-medium text-gray-500">Donor status</dt>
+          <dd className="mt-1 sm:col-span-2 sm:mt-0">
+            <DonorStatusLabel profile={profile} size="md" showDescription />
+          </dd>
+        </div>
+        {profile.next_eligible_date && (
+          <DetailRow
+            label="Next eligible to donate"
+            value={formatDate(profile.next_eligible_date)}
+          />
+        )}
         <DetailRow
           label="Donation availability"
           value={profile.donation_availability ? "ON" : "OFF"}

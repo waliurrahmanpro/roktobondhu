@@ -74,7 +74,7 @@ export async function updateProfile(
 
   const { data: existingProfile } = await supabase
     .from("profiles")
-    .select("verification_status")
+    .select("verification_status, next_eligible_date")
     .eq("user_id", user.id)
     .single();
 
@@ -85,7 +85,8 @@ export async function updateProfile(
   const donationAvailability = enforceDonationAvailability(
     dateOfBirth,
     verificationStatus,
-    donationRequested
+    donationRequested,
+    existingProfile?.next_eligible_date
   );
 
   const locationCheck = validateAndNormalizeLocation(

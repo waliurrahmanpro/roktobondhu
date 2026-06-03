@@ -28,7 +28,7 @@ export default async function AdminAnalyticsPage() {
           value={stats.acceptedMatches}
         />
         <AdminStatCard
-          label="Successful donations from matches"
+          label="Completed donations (matches)"
           value={stats.successfulDonationsFromMatches}
         />
       </div>

@@ -1,5 +1,5 @@
-import { getDonorBadge } from "@/lib/badges";
 import { isDonationAgeEligible, isVerifiedDonor } from "@/lib/eligibility";
+import { isInDonationCooldown } from "@/lib/donor-status";
 import { getTrustStatus } from "@/lib/trust";
 import type { BloodGroup, Profile, VerificationStatus } from "@/lib/types/database";
 
@@ -7,18 +7,28 @@ export const MATCH_POINTS = {
   bloodGroup: 100,
   district: 50,
   upazila: 30,
-  availability: 20,
+  verified: 30,
   trusted: 20,
-  hero: 10,
+  available: 20,
+  pointsMax: 20,
 } as const;
 
 export const MAX_MATCH_SCORE =
   MATCH_POINTS.bloodGroup +
   MATCH_POINTS.district +
   MATCH_POINTS.upazila +
-  MATCH_POINTS.availability +
+  MATCH_POINTS.verified +
   MATCH_POINTS.trusted +
-  MATCH_POINTS.hero;
+  MATCH_POINTS.pointsMax +
+  MATCH_POINTS.available;
+
+export function matchPointsBonus(totalPoints: number): number {
+  if (totalPoints >= 500) return 20;
+  if (totalPoints >= 250) return 15;
+  if (totalPoints >= 100) return 10;
+  if (totalPoints >= 50) return 5;
+  return 0;
+}
 
 export type BloodRequestForMatching = {
   blood_group: BloodGroup;
@@ -40,18 +50,24 @@ export type DonorForMatching = Pick<
   | "is_banned"
   | "verification_status"
   | "date_of_birth"
+  | "next_eligible_date"
 >;
+
+export function isMatchableDonor(donor: DonorForMatching): boolean {
+  if (donor.is_banned || !donor.donation_availability) return false;
+  if (!isVerifiedDonor(donor.verification_status as VerificationStatus)) {
+    return false;
+  }
+  if (!isDonationAgeEligible(donor.date_of_birth)) return false;
+  if (isInDonationCooldown(donor.next_eligible_date)) return false;
+  return true;
+}
 
 export function calculateDonorMatchScore(
   request: BloodRequestForMatching,
   donor: DonorForMatching
 ): number {
-  if (
-    donor.is_banned ||
-    !donor.donation_availability ||
-    !isVerifiedDonor(donor.verification_status as VerificationStatus) ||
-    !isDonationAgeEligible(donor.date_of_birth)
-  ) {
+  if (!isMatchableDonor(donor)) {
     return 0;
   }
 
@@ -81,8 +97,8 @@ export function calculateDonorMatchScore(
     score += MATCH_POINTS.upazila;
   }
 
-  if (donor.donation_availability) {
-    score += MATCH_POINTS.availability;
+  if (isVerifiedDonor(donor.verification_status as VerificationStatus)) {
+    score += MATCH_POINTS.verified;
   }
 
   const trust = getTrustStatus(
@@ -93,9 +109,10 @@ export function calculateDonorMatchScore(
     score += MATCH_POINTS.trusted;
   }
 
-  const badge = getDonorBadge(donor.total_points ?? 0);
-  if (badge.name === "Hero Donor") {
-    score += MATCH_POINTS.hero;
+  score += matchPointsBonus(donor.total_points ?? 0);
+
+  if (donor.donation_availability) {
+    score += MATCH_POINTS.available;
   }
 
   return score;

@@ -28,6 +28,7 @@ export type Profile = {
   phone: string;
   date_of_birth: string | null;
   last_donation_date: string | null;
+  next_eligible_date: string | null;
   donation_availability: boolean;
   nid_front_url: string | null;
   nid_back_url: string | null;
@@ -55,10 +56,12 @@ export type ProfileInsert = Omit<
   | "role"
   | "full_address"
   | "date_of_birth"
+  | "next_eligible_date"
   | "nid_front_url"
   | "nid_back_url"
   | "verification_status"
 > & {
+  next_eligible_date?: string | null;
   profile_picture_url?: string | null;
   full_address?: string | null;
   date_of_birth?: string | null;
@@ -222,6 +225,9 @@ export type PublicDonorProfile = Pick<
   | "reported_donations"
   | "donation_availability"
   | "verification_status"
+  | "next_eligible_date"
+  | "date_of_birth"
+  | "is_banned"
   | "last_donation_date"
   | "created_at"
   | "updated_at"

@@ -2,6 +2,10 @@ import { createClient } from "@/lib/supabase/server";
 import { maxDateOfBirthForDonorAge } from "@/lib/eligibility";
 import type { BloodGroup, Profile } from "@/lib/types/database";
 
+function todayISO() {
+  return new Date().toISOString().split("T")[0];
+}
+
 export const DONOR_PAGE_SIZE = 12;
 
 export type DonorFilters = {
@@ -28,6 +32,7 @@ export async function queryAvailableDonors(
   const districtTrimmed = district?.trim() ?? "";
   const upazilaTrimmed = upazila?.trim() ?? "";
   const maxDob = maxDateOfBirthForDonorAge();
+  const today = todayISO();
 
   let countQuery = supabase
     .from("profiles")
@@ -37,7 +42,8 @@ export async function queryAvailableDonors(
     .eq("verification_status", "approved")
     .not("date_of_birth", "is", null)
     .lte("date_of_birth", maxDob)
-    .neq("full_name", "New Donor");
+    .neq("full_name", "New Donor")
+    .or(`next_eligible_date.is.null,next_eligible_date.lte.${today}`);
 
   if (bloodGroup) {
     countQuery = countQuery.eq("blood_group", bloodGroup);
@@ -70,6 +76,7 @@ export async function queryAvailableDonors(
     .not("date_of_birth", "is", null)
     .lte("date_of_birth", maxDob)
     .neq("full_name", "New Donor")
+    .or(`next_eligible_date.is.null,next_eligible_date.lte.${today}`)
     .order("updated_at", { ascending: false });
 
   if (bloodGroup) {

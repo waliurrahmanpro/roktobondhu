@@ -37,7 +37,7 @@ export default async function AdminDashboardPage() {
           value={stats.acceptedMatches}
         />
         <AdminStatCard
-          label="Donations from matches"
+          label="Completed donations (matches)"
           value={stats.successfulDonationsFromMatches}
         />
       </div>

@@ -124,13 +124,16 @@ export async function computeTopMatchesForRequest(
   const { data: donors, error } = await supabase
     .from("profiles")
     .select(
-      "user_id, full_name, blood_group, district, upazila, phone, total_points, total_donations, reported_donations, donation_availability, is_banned, verification_status, date_of_birth"
+      "user_id, full_name, blood_group, district, upazila, phone, total_points, total_donations, reported_donations, donation_availability, is_banned, verification_status, date_of_birth, next_eligible_date"
     )
     .eq("donation_availability", true)
     .eq("is_banned", false)
     .eq("verification_status", "approved")
     .not("date_of_birth", "is", null)
     .lte("date_of_birth", maxDob)
+    .or(
+      `next_eligible_date.is.null,next_eligible_date.lte.${new Date().toISOString().split("T")[0]}`
+    )
     .neq("user_id", request.user_id);
 
   if (error || !donors) return [];
@@ -173,7 +176,7 @@ export async function fetchNearbyBloodRequestsForDonor(
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select(
-      "user_id, blood_group, district, upazila, donation_availability, total_points, total_donations, reported_donations, is_banned, verification_status, date_of_birth"
+      "user_id, blood_group, district, upazila, donation_availability, total_points, total_donations, reported_donations, is_banned, verification_status, date_of_birth, next_eligible_date"
     )
     .eq("user_id", donorUserId)
     .single();

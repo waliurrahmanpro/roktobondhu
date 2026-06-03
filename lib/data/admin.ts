@@ -105,7 +105,10 @@ export async function fetchAdminStats(): Promise<AdminStats> {
       .eq("donation_availability", true)
       .eq("is_banned", false)
       .eq("verification_status", "approved")
-      .not("date_of_birth", "is", null),
+      .not("date_of_birth", "is", null)
+      .or(
+        `next_eligible_date.is.null,next_eligible_date.lte.${new Date().toISOString().split("T")[0]}`
+      ),
     supabase.from("blood_requests").select("*", { count: "exact", head: true }),
     supabase.from("donations").select("*", { count: "exact", head: true }),
     supabase
@@ -131,7 +134,7 @@ export async function fetchAdminStats(): Promise<AdminStats> {
     totalReports: reportsRes.count ?? 0,
     totalMatchesGenerated: matchesRes.count ?? 0,
     acceptedMatches: acceptedRes.count ?? 0,
-    successfulDonationsFromMatches: donatedRes.count ?? 0,
+    successfulDonationsFromMatches: donatedRes.count ?? 0, // completed donations from matches
   };
 }
 
