@@ -7,7 +7,7 @@ import {
 } from "@/components/AuthForm";
 
 export const metadata = {
-  title: "Login — RoktoBondhu",
+  title: "Login — Blood Bridge BD",
 };
 
 type LoginPageProps = {

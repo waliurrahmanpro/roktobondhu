@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RoktoBondhu — Blood Donation Platform",
+  title: "Blood Bridge BD — Blood Donation Platform",
   description:
     "Find blood donors and post emergency requests across Bangladesh.",
 };

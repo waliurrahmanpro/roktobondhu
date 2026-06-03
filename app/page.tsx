@@ -59,7 +59,7 @@ export default async function Home() {
                 <span className="text-red-100">Save a life today.</span>
               </h1>
               <p className="mt-6 max-w-xl text-lg text-red-100/90">
-                RoktoBondhu connects patients in need with verified blood
+                Blood Bridge BD connects patients in need with verified blood
                 donors across Bangladesh — fast, free, and always ready for
                 emergencies.
               </p>
@@ -251,7 +251,7 @@ export default async function Home() {
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-600 text-white">
                   <DropletIcon className="h-4 w-4" />
                 </span>
-                RoktoBondhu
+                Blood Bridge BD
               </a>
               <p className="mt-4 max-w-xs text-sm text-gray-600">
                 Connecting blood donors with those in need across Bangladesh.
@@ -311,7 +311,7 @@ export default async function Home() {
             <div>
               <h4 className="font-semibold text-gray-900">Contact</h4>
               <ul className="mt-4 space-y-2 text-sm text-gray-600">
-                <li>support@roktobondhu.org</li>
+                <li>support@Blood Bridge BD.org</li>
                 <li>+880 1XXX-XXXXXX</li>
                 <li>Dhaka, Bangladesh</li>
               </ul>
@@ -319,7 +319,7 @@ export default async function Home() {
           </div>
           <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-8 sm:flex-row">
             <p className="text-sm text-gray-500">
-              © {new Date().getFullYear()} RoktoBondhu. All rights reserved.
+              © {new Date().getFullYear()} Blood Bridge BD. All rights reserved.
             </p>
             <div className="flex gap-6 text-sm text-gray-500">
               <a href="#" className="hover:text-red-600">

@@ -3,7 +3,7 @@ import { ForgotPasswordForm } from "@/components/ForgotPasswordForm";
 import { AuthPageShell, AuthFooterLink } from "@/components/AuthForm";
 
 export const metadata = {
-  title: "Forgot password — RoktoBondhu",
+  title: "Forgot password — Blood Bridge BD",
 };
 
 export default function ForgotPasswordPage() {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Maintenance — RoktoBondhu",
+  title: "Maintenance — Blood Bridge BD",
 };
 
 export default function MaintenancePage() {
@@ -9,7 +9,7 @@ export default function MaintenancePage() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 px-4 pt-20 text-center">
       <h1 className="text-3xl font-bold text-gray-900">Under maintenance</h1>
       <p className="mt-4 max-w-md text-gray-600">
-        RoktoBondhu is temporarily unavailable while we perform updates. Please
+        Blood Bridge BD is temporarily unavailable while we perform updates. Please
         check back soon.
       </p>
       <Link

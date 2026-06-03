@@ -49,7 +49,7 @@ export function ReceiverRequestCard({ request }: ReceiverRequestCardProps) {
           <a
             href={whatsAppLink(
               donor.phone,
-              `Hello ${donor.full_name}, thank you for accepting my blood request on RoktoBondhu.`
+              `Hello ${donor.full_name}, thank you for accepting my blood request on Blood Bridge BD.`
             )}
             target="_blank"
             rel="noopener noreferrer"

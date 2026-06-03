@@ -6,7 +6,7 @@ import { fetchIncomingDonorRequests } from "@/lib/data/donor-requests";
 import { fetchUnreadNotificationCount } from "@/lib/data/donor-requests";
 
 export const metadata = {
-  title: "Incoming requests — RoktoBondhu",
+  title: "Incoming requests — Blood Bridge BD",
 };
 
 export default async function IncomingRequestsPage() {

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/roles";
 
 export const metadata = {
-  title: "Admin — RoktoBondhu",
+  title: "Admin — Blood Bridge BD",
 };
 
 export default async function AdminLayout({

@@ -18,8 +18,8 @@ export async function generateMetadata({ params }: PageProps) {
   const request = await fetchBloodRequestForViewer(id, user?.id ?? null);
   return {
     title: request
-      ? `Edit ${request.blood_group} request — RoktoBondhu`
-      : "Edit request — RoktoBondhu",
+      ? `Edit ${request.blood_group} request — Blood Bridge BD`
+      : "Edit request — Blood Bridge BD",
   };
 }
 

@@ -1,4 +1,4 @@
--- RoktoBondhu: profiles table
+-- Blood Bridge BD: profiles table
 -- Run once in Supabase Dashboard → SQL Editor (see supabase/README.md)
 
 create extension if not exists "pgcrypto";

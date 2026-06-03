@@ -43,7 +43,7 @@ export function MatchedDonorCard({
   bloodGroup,
 }: MatchedDonorCardProps) {
   const donor = match.donor;
-  const whatsappMessage = `Hello ${donor.full_name}, there is an urgent ${bloodGroup} blood need on RoktoBondhu near you.`;
+  const whatsappMessage = `Hello ${donor.full_name}, there is an urgent ${bloodGroup} blood need on Blood Bridge BD near you.`;
 
   return (
     <article className="rounded-2xl border border-green-200 bg-white p-5 shadow-sm">

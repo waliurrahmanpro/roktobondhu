@@ -17,7 +17,7 @@ import { NidVerificationSection } from "@/components/NidVerificationSection";
 import { isDonationAgeEligible } from "@/lib/eligibility";
 
 export const metadata = {
-  title: "Dashboard — RoktoBondhu",
+  title: "Dashboard — Blood Bridge BD",
 };
 
 export default async function DashboardPage() {

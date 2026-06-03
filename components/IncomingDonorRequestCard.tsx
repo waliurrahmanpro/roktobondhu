@@ -82,7 +82,7 @@ export function IncomingDonorRequestCard({
             <a
               href={whatsAppLink(
                 receiver.phone,
-                `Hello ${receiver.full_name}, regarding your blood request on RoktoBondhu.`
+                `Hello ${receiver.full_name}, regarding your blood request on Blood Bridge BD.`
               )}
               target="_blank"
               rel="noopener noreferrer"

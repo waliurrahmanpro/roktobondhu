@@ -9,7 +9,7 @@ import {
 } from "@/lib/data/donor-requests";
 
 export const metadata = {
-  title: "My requests — RoktoBondhu",
+  title: "My requests — Blood Bridge BD",
 };
 
 export default async function MyRequestsPage() {

@@ -9,7 +9,7 @@ import { fetchUserNotifications } from "@/lib/data/notifications";
 import { fetchUnreadNotificationCount } from "@/lib/data/donor-requests";
 
 export const metadata = {
-  title: "Notifications — RoktoBondhu",
+  title: "Notifications — Blood Bridge BD",
 };
 
 export default async function NotificationsPage() {

@@ -5,7 +5,7 @@ import { ResetPasswordForm } from "@/components/ResetPasswordForm";
 import { AuthPageShell } from "@/components/AuthForm";
 
 export const metadata = {
-  title: "Reset password — RoktoBondhu",
+  title: "Reset password — Blood Bridge BD",
 };
 
 export default async function ResetPasswordPage() {

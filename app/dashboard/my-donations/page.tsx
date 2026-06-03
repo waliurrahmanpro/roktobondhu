@@ -8,7 +8,7 @@ import { fetchMyDonations } from "@/lib/data/donations";
 import { fetchUnreadNotificationCount } from "@/lib/data/donor-requests";
 
 export const metadata = {
-  title: "My donations — RoktoBondhu",
+  title: "My donations — Blood Bridge BD",
 };
 
 export default async function MyDonationsPage() {

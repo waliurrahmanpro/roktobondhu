@@ -6,7 +6,7 @@ import { BloodRequestCard } from "@/components/BloodRequestCard";
 import { sortBloodRequests } from "@/lib/blood-requests";
 
 export const metadata = {
-  title: "Blood Requests — RoktoBondhu",
+  title: "Blood Requests — Blood Bridge BD",
 };
 
 export default async function BloodRequestsDashboardPage() {

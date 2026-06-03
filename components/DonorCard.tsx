@@ -43,7 +43,7 @@ function PhoneIcon({ className }: { className?: string }) {
 }
 
 export function DonorCard({ donor, isLoggedIn }: DonorCardProps) {
-  const whatsappMessage = `Hello ${donor.full_name}, I found you on RoktoBondhu and need ${donor.blood_group} blood.`;
+  const whatsappMessage = `Hello ${donor.full_name}, I found you on Blood Bridge BD and need ${donor.blood_group} blood.`;
   const reported = donor.reported_donations ?? 0;
   const donations = donor.total_donations ?? 0;
 

@@ -13,11 +13,11 @@ export async function generateMetadata({ params }: DonorProfilePageProps) {
   const profile = await fetchPublicDonorProfile(id);
 
   if (!profile) {
-    return { title: "Donor not found — RoktoBondhu" };
+    return { title: "Donor not found — Blood Bridge BD" };
   }
 
   return {
-    title: `${profile.full_name} — RoktoBondhu`,
+    title: `${profile.full_name} — Blood Bridge BD`,
     description: `${profile.full_name} (${profile.blood_group}) — ${profile.total_points ?? 0} points, ${profile.total_donations ?? 0} donations`,
   };
 }

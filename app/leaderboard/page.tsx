@@ -4,8 +4,8 @@ import { LeaderboardTable } from "@/components/LeaderboardTable";
 import { fetchLeaderboardPage } from "@/lib/data/leaderboard";
 
 export const metadata = {
-  title: "Leaderboard — RoktoBondhu",
-  description: "Top blood donors ranked by points on RoktoBondhu",
+  title: "Leaderboard — Blood Bridge BD",
+  description: "Top blood donors ranked by points on Blood Bridge BD",
 };
 
 type LeaderboardPageProps = {

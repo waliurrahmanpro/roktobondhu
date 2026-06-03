@@ -1,4 +1,4 @@
-# Supabase setup (RoktoBondhu)
+# Supabase setup (Blood Bridge BD)
 
 ## 1. Create a project
 
