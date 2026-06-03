@@ -39,24 +39,7 @@ export type MatchingAnalytics = {
   successfulDonations: number;
 };
 
-export async function fetchBloodRequestById(
-  id: string
-): Promise<BloodRequest | null> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("blood_requests")
-    .select("*")
-    .eq("id", id)
-    .eq("status", "active")
-    .maybeSingle();
-
-  if (error) {
-    console.error("Failed to fetch blood request:", error.message);
-    return null;
-  }
-
-  return (data as BloodRequest) ?? null;
-}
+export { fetchActiveBloodRequestById as fetchBloodRequestById } from "@/lib/data/blood-requests";
 
 export async function fetchTopMatchesForRequest(
   requestId: string,

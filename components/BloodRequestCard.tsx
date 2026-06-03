@@ -2,6 +2,7 @@ import Link from "next/link";
 import { formatDate } from "@/lib/format";
 import { formatLocationLine } from "@/lib/bangladesh-locations";
 import { urgencyLabel, urgencyStyles } from "@/lib/blood-requests";
+import { formatBloodRequestStatus } from "@/lib/data/admin";
 import type { BloodRequest } from "@/lib/types/database";
 
 type BloodRequestCardProps = {
@@ -31,12 +32,19 @@ export function BloodRequestCard({
             <p className="text-sm text-gray-500">{request.hospital_name}</p>
           </div>
         </div>
-        <span
-          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide ${styles.badge}`}
-        >
-          <span className={`h-1.5 w-1.5 rounded-full bg-white/90`} />
-          {urgencyLabel(request.urgency_level)}
-        </span>
+        <div className="flex flex-col items-end gap-1.5">
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide ${styles.badge}`}
+          >
+            <span className={`h-1.5 w-1.5 rounded-full bg-white/90`} />
+            {urgencyLabel(request.urgency_level)}
+          </span>
+          {request.status !== "active" && (
+            <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-700">
+              {formatBloodRequestStatus(request.status)}
+            </span>
+          )}
+        </div>
       </div>
 
       <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-2">

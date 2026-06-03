@@ -356,6 +356,14 @@ export type Database = {
         Args: { p_user_id: string; p_action: "approve" | "reject" };
         Returns: undefined;
       };
+      log_blood_request_audit: {
+        Args: {
+          p_action: string;
+          p_request_id: string;
+          p_details?: Record<string, unknown>;
+        };
+        Returns: undefined;
+      };
     };
     Views: Record<string, never>;
     Enums: Record<string, never>;

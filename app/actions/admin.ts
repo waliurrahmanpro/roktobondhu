@@ -132,6 +132,11 @@ export async function removeBloodRequestAction(
 
   if (error) return { error: error.message };
 
+  await auth.supabase.rpc("log_blood_request_audit", {
+    p_action: "Request Deleted",
+    p_request_id: requestId,
+  });
+
   revalidatePath("/admin/requests");
   revalidatePath("/");
   return { success: "Request removed from public feed." };
@@ -153,8 +158,14 @@ export async function completeBloodRequestAction(
 
   if (error) return { error: error.message };
 
+  await auth.supabase.rpc("log_blood_request_audit", {
+    p_action: "Request Completed",
+    p_request_id: requestId,
+  });
+
   revalidatePath("/admin/requests");
   revalidatePath("/");
+  revalidatePath(`/requests/${requestId}`);
   return { success: "Request marked as completed." };
 }
 

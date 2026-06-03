@@ -93,6 +93,12 @@ Regular admins:
 update public.profiles set role = 'admin' where user_id = 'another-uuid';
 ```
 
+## 2k. Blood request owner control (audit)
+
+Run **`015_blood_request_audit.sql`** for:
+
+- `log_blood_request_audit()` — owners and admins can log request edit/delete/complete/reopen events
+
 ## 2j. Smart matching & donation cooldown (Phase 7B)
 
 Run **`014_matching_and_cooldown.sql`** for:
