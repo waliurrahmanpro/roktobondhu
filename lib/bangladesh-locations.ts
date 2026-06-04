@@ -13,6 +13,8 @@ export type BangladeshLocationsData = {
 const data = locationsData as BangladeshLocationsData;
 
 export const BANGLADESH_DIVISIONS = data.divisions;
+export const DIVISIONS = data.divisions;
+export const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
 export function getDistrictsForDivision(division: string): string[] {
   const resolved = resolveDivisionName(division);

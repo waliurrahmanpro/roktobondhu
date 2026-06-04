@@ -204,6 +204,30 @@ export type AuditLog = {
   created_at: string;
 };
 
+export type BroadcastPriority = "normal" | "urgent";
+
+export type BroadcastTargetType =
+  | "all_users"
+  | "all_donors"
+  | "blood_group"
+  | "division"
+  | "district";
+
+export type Broadcast = {
+  id: string;
+  title: string;
+  message: string;
+  priority: BroadcastPriority;
+  target_type: BroadcastTargetType;
+  target_value: string | null;
+  total_recipients: number;
+  delivered_count: number;
+  read_count: number;
+  created_by: string | null;
+  sent_at: string | null;
+  created_at: string;
+};
+
 export type DonationWithProfiles = Donation & {
   donor_profile: ProfileSummary | null;
   receiver_profile: ProfileSummary | null;
@@ -332,6 +356,12 @@ export type Database = {
         Update: Partial<Pick<UserNote, "body">>;
         Relationships: [];
       };
+      broadcasts: {
+        Row: Broadcast;
+        Insert: Omit<Broadcast, "id" | "total_recipients" | "delivered_count" | "read_count" | "created_at">;
+        Update: Partial<Broadcast>;
+        Relationships: [];
+      };
     };
     Functions: {
       complete_donation: {
@@ -445,6 +475,24 @@ export type Database = {
       };
       admin_delete_user_note: {
         Args: { p_note_id: string };
+        Returns: undefined;
+      };
+      create_broadcast: {
+        Args: {
+          p_title: string;
+          p_message: string;
+          p_priority: string;
+          p_target_type: string;
+          p_target_value?: string | null;
+        };
+        Returns: string;
+      };
+      send_broadcast: {
+        Args: { p_broadcast_id: string };
+        Returns: number;
+      };
+      refresh_broadcast_analytics: {
+        Args: Record<string, never>;
         Returns: undefined;
       };
     };
