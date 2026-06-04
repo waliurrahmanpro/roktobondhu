@@ -42,8 +42,10 @@ export function NotificationBell() {
             filter: `user_id=eq.${user.id}`,
           },
           (payload) => {
+            console.log("NotificationBell: INSERT received", payload.new);
             setUnreadCount((prev) => prev + 1);
             // Dispatch custom event for toast
+            console.log("NotificationBell: Dispatching custom event", payload.new);
             window.dispatchEvent(
               new CustomEvent("new-notification", {
                 detail: payload.new,

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { NotificationToast } from "@/components/NotificationToast";
 import { getUserRole, hasAdminAccess, hasSuperAdminAccess } from "@/lib/roles";
 import { createClient } from "@/lib/supabase/server";
@@ -48,7 +49,8 @@ export default async function RootLayout({
           isSuperAdmin={isSuperAdmin}
         />
         <NotificationToast />
-        {children}
+        <main className="flex-1">{children}</main>
+        <Footer />
       </body>
     </html>
   );

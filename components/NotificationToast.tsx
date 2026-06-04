@@ -63,8 +63,12 @@ export function NotificationToast() {
     Array<{ id: string; title: string; message: string }>
   >([]);
 
+  console.log("NotificationToast: Component rendered, toasts:", toasts);
+
   useEffect(() => {
+    console.log("NotificationToast: Setting up event listener");
     const handleNewNotification = (event: CustomEvent) => {
+      console.log("NotificationToast: Event received", event.detail);
       const notification = event.detail as {
         id: string;
         title: string;
@@ -84,6 +88,7 @@ export function NotificationToast() {
     window.addEventListener("new-notification", handleNewNotification as EventListener);
 
     return () => {
+      console.log("NotificationToast: Cleaning up event listener");
       window.removeEventListener(
         "new-notification",
         handleNewNotification as EventListener
