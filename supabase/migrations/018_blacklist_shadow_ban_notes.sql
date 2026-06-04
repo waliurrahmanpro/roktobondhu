@@ -557,7 +557,8 @@ begin
     'points_adjustment',
     'profile',
     p_user_id::text,
-    jsonb_build_object('delta', p_delta, 'reason', p_reason, 'balance_after', v_new_balance)
+    jsonb_build_object('delta', p_delta, 'reason', p_reason, 'balance_after', v_new_balance),
+    'points'
   );
 end;
 $$;

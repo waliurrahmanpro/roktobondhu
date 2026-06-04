@@ -269,7 +269,8 @@ begin
     'role_change',
     'profile',
     p_user_id::text,
-    jsonb_build_object('new_role', p_new_role)
+    jsonb_build_object('new_role', p_new_role),
+    'moderation'
   );
 end;
 $$;
@@ -320,7 +321,8 @@ begin
     'points_adjustment',
     'profile',
     p_user_id::text,
-    jsonb_build_object('delta', p_delta, 'reason', p_reason, 'balance_after', v_new_balance)
+    jsonb_build_object('delta', p_delta, 'reason', p_reason, 'balance_after', v_new_balance),
+    'points'
   );
 end;
 $$;
@@ -361,7 +363,8 @@ begin
     'emergency_broadcast',
     'notification',
     null,
-    jsonb_build_object('title', p_title, 'message', p_message, 'recipient_count', v_count)
+    jsonb_build_object('title', p_title, 'message', p_message, 'recipient_count', v_count),
+    'moderation'
   );
 
   return v_count;
@@ -398,7 +401,8 @@ begin
     'announcement_created',
     'announcement',
     v_id::text,
-    jsonb_build_object('title', p_title, 'notify_all', p_notify_all)
+    jsonb_build_object('title', p_title, 'notify_all', p_notify_all),
+    'moderation'
   );
 
   if p_notify_all then
@@ -448,7 +452,8 @@ begin
       'registration_enabled', p_registration_enabled,
       'blood_request_enabled', p_blood_request_enabled,
       'maintenance_mode', p_maintenance_mode
-    )
+    ),
+    'moderation'
   );
 end;
 $$;
