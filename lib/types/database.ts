@@ -184,6 +184,15 @@ export type PointTransaction = {
   created_at: string;
 };
 
+export type AuditLogCategory =
+  | "verification"
+  | "requests"
+  | "donations"
+  | "moderation"
+  | "points"
+  | "profile"
+  | "auth";
+
 export type AuditLog = {
   id: string;
   actor_id: string | null;
@@ -191,6 +200,7 @@ export type AuditLog = {
   target_type: string | null;
   target_id: string | null;
   details: Record<string, unknown>;
+  category: AuditLogCategory | null;
   created_at: string;
 };
 

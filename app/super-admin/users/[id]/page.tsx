@@ -8,11 +8,13 @@ import { SuperAdminNav } from "@/components/super-admin/SuperAdminNav";
 import { SuperAdminUserControls } from "@/components/super-admin/SuperAdminUserControls";
 import { SuperAdminUserEditorForm } from "@/components/super-admin/SuperAdminUserEditorForm";
 import { SuperAdminUserModerationPanel } from "@/components/super-admin/SuperAdminUserModerationPanel";
+import { UserTimelineWithFilters } from "@/components/super-admin/UserTimelineWithFilters";
 import {
   fetchSuperAdminUserDetail,
   formatNidStatus,
 } from "@/lib/data/super-admin-users";
 import { fetchUserNotesForAdmin } from "@/lib/data/user-notes";
+import { fetchUserTimelineWithProfile } from "@/lib/data/user-timeline";
 import { formatDate } from "@/lib/format";
 import { formatLocationLine } from "@/lib/bangladesh-locations";
 
@@ -48,9 +50,10 @@ export default async function SuperAdminUserDetailPage({ params }: PageProps) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [profile, notes] = await Promise.all([
+  const [profile, notes, timeline] = await Promise.all([
     fetchSuperAdminUserDetail(id),
     fetchUserNotesForAdmin(id),
+    fetchUserTimelineWithProfile(id),
   ]);
   if (!profile) {
     notFound();
@@ -182,6 +185,8 @@ export default async function SuperAdminUserDetailPage({ params }: PageProps) {
               />
             </>
           )}
+
+          <UserTimelineWithFilters logs={timeline} currentUserId={user?.id} />
 
           <p className="text-xs text-gray-500">
             User ID: <span className="font-mono">{profile.user_id}</span>
