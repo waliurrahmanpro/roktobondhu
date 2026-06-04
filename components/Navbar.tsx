@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { DropletIcon } from "@/components/DropletIcon";
+import { NotificationBell } from "@/components/NotificationBell";
 import { logout } from "@/app/actions/auth";
 
 const mainLinks = [
@@ -118,6 +119,7 @@ export default function Navbar({
         <div className="hidden items-center gap-3 md:flex">
           {isLoggedIn ? (
             <>
+              <NotificationBell />
               <span className="max-w-[180px] truncate text-sm text-gray-500">
                 {userEmail}
               </span>
